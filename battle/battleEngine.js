@@ -39,8 +39,9 @@ export function updateBattle(dt) {
     messageTimer -= dt;
     if (messageTimer <= 0) {
       if (battle.nextAction) {
-        battle.nextAction();
-        battle.nextAction = null;
+        const action = battle.nextAction;
+        battle.nextAction = null;  // clear BEFORE calling, so action can set a new one
+        action();
       }
     }
     return;
