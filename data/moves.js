@@ -5,150 +5,414 @@ export const MOVES = [
     id: 'segfault',
     name: 'SegFault',
     power: 10,
-    type: 'memory'
+    type: 'backend'
   },
   {
-    id: 'hotfix',
-    name: 'Hotfix',
-    power: 6,
-    type: 'syntax'
-  },
-  {
-    id: 'threadlock',
-    name: 'ThreadLock',
+    id: 'unhandledexception',
+    name: 'UnhandledException',
     power: 8,
-    type: 'logic'
+    type: 'backend'
   },
   {
-    id: 'garbagecollect',
-    name: 'GarbageCollect',
+    id: 'memoryaccess',
+    name: 'MemoryAccess',
     power: 7,
-    type: 'memory'
+    type: 'backend'
   },
   {
-    id: 'memorydump',
-    name: 'MemoryDump',
+    id: 'recursiveloop',
+    name: 'RecursiveLoop',
     power: 9,
-    type: 'memory'
+    type: 'backend'
   },
   {
-    id: 'mutex',
-    name: 'Mutex',
-    power: 7,
-    type: 'logic'
+    id: 'stackoverflowmove',
+    name: 'StackOverflow',
+    power: 11,
+    type: 'backend'
   },
   {
-    id: 'forcequit',
-    name: 'ForceQuit',
+    id: 'eventstorm',
+    name: 'EventStorm',
+    power: 8,
+    type: 'backend'
+  },
+  {
+    id: 'threadcollision',
+    name: 'ThreadCollision',
+    power: 9,
+    type: 'backend'
+  },
+  {
+    id: 'deadlockmove',
+    name: 'Deadlock',
     power: 12,
-    type: 'runtime'
+    type: 'backend'
   },
   {
-    id: 'patchdeploy',
-    name: 'PatchDeploy',
-    power: 7,
-    type: 'syntax'
-  },
-  {
-    id: 'refactor',
-    name: 'Refactor',
-    power: 8,
-    type: 'syntax'
-  },
-  {
-    id: 'bluescreen',
-    name: 'BlueScreen',
-    power: 11,
-    type: 'runtime'
-  },
-  {
-    id: 'coredump',
-    name: 'CoreDump',
+    id: 'datacorruption',
+    name: 'DataCorruption',
     power: 10,
-    type: 'memory'
+    type: 'backend'
   },
   {
-    id: 'rollback',
-    name: 'Rollback',
-    power: 5,
-    type: 'logic'
+    id: 'heapoverflow',
+    name: 'HeapOverflow',
+    power: 11,
+    type: 'backend'
   },
   {
-    id: 'hotreload',
-    name: 'HotReload',
-    power: 6,
-    type: 'runtime'
-  },
-  {
-    id: 'typemismatch',
-    name: 'TypeMismatch',
+    id: 'garbagestorm',
+    name: 'GarbageStorm',
     power: 8,
-    type: 'logic'
+    type: 'backend'
   },
   {
-    id: 'compile',
-    name: 'Compile',
-    power: 14,
-    type: 'syntax'
+    id: 'referencetrap',
+    name: 'ReferenceTrap',
+    power: 7,
+    type: 'backend'
   },
   {
-    id: 'nullcheck',
-    name: 'NullCheck',
-    power: 4,
-    type: 'memory'
+    id: 'layoutshift',
+    name: 'LayoutShift',
+    power: 7,
+    type: 'frontend'
   },
   {
-    id: 'bufferoverrun',
-    name: 'BufferOverrun',
-    power: 13,
-    type: 'memory'
-  },
-  {
-    id: 'cacheinvalidation',
-    name: 'CacheInvalidation',
+    id: 'zindexwar',
+    name: 'ZIndexWar',
     power: 9,
     type: 'frontend'
   },
   {
-    id: 'dommanipulation',
-    name: 'DOMManipulation',
-    power: 7,
+    id: 'margincollapse',
+    name: 'MarginCollapse',
+    power: 8,
     type: 'frontend'
   },
   {
-    id: 'sqlinjection',
-    name: 'SQLInjection',
-    power: 11,
-    type: 'backend'
-  },
-  {
-    id: 'apitimeout',
-    name: 'APITimeout',
+    id: 'loadingloop',
+    name: 'LoadingLoop',
     power: 8,
-    type: 'backend'
+    type: 'frontend'
   },
   {
-    id: 'dockerkill',
-    name: 'DockerKill',
+    id: 'timeout',
+    name: 'Timeout',
+    power: 10,
+    type: 'frontend'
+  },
+  {
+    id: 'retryrequest',
+    name: 'RetryRequest',
+    power: 6,
+    type: 'frontend'
+  },
+  {
+    id: 'reduxstorm',
+    name: 'ReduxStorm',
+    power: 11,
+    type: 'frontend'
+  },
+  {
+    id: 'contextexplosion',
+    name: 'ContextExplosion',
+    power: 9,
+    type: 'frontend'
+  },
+  {
+    id: 'statemutation',
+    name: 'StateMutation',
+    power: 10,
+    type: 'frontend'
+  },
+  {
+    id: 'conflictmarkers',
+    name: 'ConflictMarkers',
+    power: 8,
+    type: 'devops'
+  },
+  {
+    id: 'forcepush',
+    name: 'ForcePush',
+    power: 12,
+    type: 'devops'
+  },
+  {
+    id: 'detachedhead',
+    name: 'DetachedHead',
+    power: 7,
+    type: 'devops'
+  },
+  {
+    id: 'flakytestmove',
+    name: 'FlakyTest',
+    power: 8,
+    type: 'devops'
+  },
+  {
+    id: 'pipelinecrash',
+    name: 'PipelineCrash',
     power: 10,
     type: 'devops'
   },
   {
-    id: 'pipelinefailure',
-    name: 'PipelineFailure',
+    id: 'dependencymismatch',
+    name: 'DependencyMismatch',
+    power: 9,
+    type: 'devops'
+  },
+  {
+    id: 'containerspawn',
+    name: 'ContainerSpawn',
+    power: 8,
+    type: 'devops'
+  },
+  {
+    id: 'imagepull',
+    name: 'ImagePull',
+    power: 6,
+    type: 'devops'
+  },
+  {
+    id: 'portbinding',
+    name: 'PortBinding',
     power: 7,
     type: 'devops'
   },
   {
-    id: 'assertionerror',
-    name: 'AssertionError',
+    id: 'randomfail',
+    name: 'RandomFail',
     power: 8,
     type: 'testing'
   },
   {
-    id: 'mockoverride',
-    name: 'MockOverride',
-    power: 6,
+    id: 'timingissue',
+    name: 'TimingIssue',
+    power: 7,
     type: 'testing'
+  },
+  {
+    id: 'mockbreak',
+    name: 'MockBreak',
+    power: 9,
+    type: 'testing'
+  },
+  {
+    id: 'expectedmismatch',
+    name: 'ExpectedMismatch',
+    power: 8,
+    type: 'testing'
+  },
+  {
+    id: 'edgecase',
+    name: 'EdgeCase',
+    power: 10,
+    type: 'testing'
+  },
+  {
+    id: 'strictmode',
+    name: 'StrictMode',
+    power: 11,
+    type: 'testing'
+  },
+  {
+    id: 'couplingstrike',
+    name: 'CouplingStrike',
+    power: 9,
+    type: 'architecture'
+  },
+  {
+    id: 'dependencyweb',
+    name: 'DependencyWeb',
+    power: 8,
+    type: 'architecture'
+  },
+  {
+    id: 'refactorresist',
+    name: 'RefactorResist',
+    power: 7,
+    type: 'architecture'
+  },
+  {
+    id: 'dependencyrule',
+    name: 'DependencyRule',
+    power: 10,
+    type: 'architecture'
+  },
+  {
+    id: 'interfacesegregation',
+    name: 'InterfaceSegregation',
+    power: 9,
+    type: 'architecture'
+  },
+  {
+    id: 'abstractionshield',
+    name: 'AbstractionShield',
+    power: 8,
+    type: 'architecture'
+  },
+  {
+    id: 'untouchablemodule',
+    name: 'UntouchableModule',
+    power: 13,
+    type: 'architecture'
+  },
+  {
+    id: 'tribalknowledge',
+    name: 'TribalKnowledge',
+    power: 11,
+    type: 'architecture'
+  },
+  {
+    id: 'refactorcurse',
+    name: 'RefactorCurse',
+    power: 12,
+    type: 'architecture'
+  },
+  {
+    id: 'tabledrop',
+    name: 'TableDrop',
+    power: 12,
+    type: 'security'
+  },
+  {
+    id: 'queryescape',
+    name: 'QueryEscape',
+    power: 7,
+    type: 'security'
+  },
+  {
+    id: 'privilegeescalation',
+    name: 'PrivilegeEscalation',
+    power: 11,
+    type: 'security'
+  },
+  {
+    id: 'scriptinjection',
+    name: 'ScriptInjection',
+    power: 10,
+    type: 'security'
+  },
+  {
+    id: 'domhijack',
+    name: 'DOMHijack',
+    power: 9,
+    type: 'security'
+  },
+  {
+    id: 'cookietheft',
+    name: 'CookieTheft',
+    power: 8,
+    type: 'security'
+  },
+  {
+    id: 'promptinjection',
+    name: 'PromptInjection',
+    power: 10,
+    type: 'ai'
+  },
+  {
+    id: 'contextflood',
+    name: 'ContextFlood',
+    power: 8,
+    type: 'ai'
+  },
+  {
+    id: 'tokenoverflow',
+    name: 'TokenOverflow',
+    power: 9,
+    type: 'ai'
+  },
+  {
+    id: 'confidentanswer',
+    name: 'ConfidentAnswer',
+    power: 7,
+    type: 'ai'
+  },
+  {
+    id: 'fabricatedcitation',
+    name: 'FabricatedCitation',
+    power: 9,
+    type: 'ai'
+  },
+  {
+    id: 'creativeguess',
+    name: 'CreativeGuess',
+    power: 8,
+    type: 'ai'
+  },
+  {
+    id: 'recursiveselfimprove',
+    name: 'RecursiveSelfImprove',
+    power: 14,
+    type: 'ai'
+  },
+  {
+    id: 'computeoverload',
+    name: 'ComputeOverload',
+    power: 12,
+    type: 'ai'
+  },
+  {
+    id: 'alignmenttest',
+    name: 'AlignmentTest',
+    power: 11,
+    type: 'ai'
+  },
+  {
+    id: 'safeaccess',
+    name: 'SafeAccess',
+    power: 9,
+    type: 'backend'
+  },
+  {
+    id: 'typecheck',
+    name: 'TypeCheck',
+    power: 11,
+    type: 'backend'
+  },
+  {
+    id: 'asyncresolve',
+    name: 'AsyncResolve',
+    power: 12,
+    type: 'backend'
+  },
+  {
+    id: 'memoryreclaim',
+    name: 'MemoryReclaim',
+    power: 10,
+    type: 'backend'
+  },
+  {
+    id: 'flexalign',
+    name: 'FlexAlign',
+    power: 9,
+    type: 'frontend'
+  },
+  {
+    id: 'gridsnap',
+    name: 'GridSnap',
+    power: 12,
+    type: 'frontend'
+  },
+  {
+    id: 'cleanhistory',
+    name: 'CleanHistory',
+    power: 10,
+    type: 'devops'
+  },
+  {
+    id: 'servicemesh',
+    name: 'ServiceMesh',
+    power: 11,
+    type: 'architecture'
+  },
+  {
+    id: 'fewshotlearn',
+    name: 'FewShotLearn',
+    power: 11,
+    type: 'ai'
   }
 ];

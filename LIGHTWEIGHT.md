@@ -2,7 +2,7 @@
 
 **How small can a game be?**
 
-BugMon is a complete monster-taming RPG — 20 creatures, 25 moves, 8 types, turn-based battles, tile-based exploration, synthesized audio, mobile touch controls — and it weighs less than the average website's hero image.
+BugMon is a complete monster-taming RPG — 30 creatures, 69 moves, 7 types, evolution chains, turn-based battles, tile-based exploration, synthesized audio, mobile touch controls — and the whole thing fits in a single HTML file.
 
 No npm. No webpack. No React. No Babel. No transpiler. No bundler. No framework. No polyfills. No node_modules.
 
@@ -14,20 +14,18 @@ Just vanilla JavaScript and vibes.
 
 | Category | Files | Size |
 |----------|------:|-----:|
-| JavaScript (game logic) | 14 | ~33 KB |
+| JavaScript (game logic + engine) | ~25 | ~100 KB |
 | HTML + inline CSS | 1 | 5.5 KB |
-| JSON data (monsters, moves, types, map) | 4 | 16.4 KB |
+| JSON data (monsters, moves, types, map, evolutions) | 5 | 37 KB |
 | PNG sprites (pixel art) | 8 | 6.0 KB |
-| **Total deployable** | **27** | **~61 KB** |
+| **Total deployable** | **~54** | **~190 KB** |
 
 ### Single-File Build (`dist/bugmon.html`)
 
 | Metric | Size |
 |--------|-----:|
-| With sprites (base64) | 39 KB |
-| Without sprites (procedural fallback) | 35 KB |
-| **Gzipped (with sprites)** | **12.5 KB** |
-| **Gzipped (no sprites)** | **9.5 KB** |
+| With sprites (base64) | 73 KB |
+| **Gzipped (with sprites)** | **~21 KB** |
 | HTTP requests | **1** |
 
 Build it yourself: `node scripts/build.js`
@@ -36,7 +34,7 @@ Build it yourself: `node scripts/build.js`
 
 | What | Size |
 |------|-----:|
-| **BugMon (gzipped, with sprites)** | **12.5 KB** |
+| **BugMon (gzipped, with sprites)** | **~21 KB** |
 | React 18 production (minified) | ~142 KB |
 | jQuery 3.7 (minified) | ~87 KB |
 | Vue 3 (minified) | ~33 KB |
@@ -45,7 +43,7 @@ Build it yourself: `node scripts/build.js`
 | Average website hero image | ~200-500 KB |
 | `create-react-app` node_modules | ~300,000 KB |
 
-BugMon has 20 monsters, 25 moves, 8 types, procedural terrain, synthesized audio, a full battle system, and mobile controls. It fits in less space than jQuery's license preamble.
+BugMon has 30 monsters, 69 moves, 7 types, evolution chains, procedural terrain, synthesized audio, a full battle system, and mobile controls. Still smaller than jQuery.
 
 `node_modules` size: **0 bytes. Forever.**
 
@@ -64,7 +62,7 @@ No DOM manipulation. No virtual DOM diffing. No React reconciler. One `<canvas>`
 `<script type="module">` — that's it. The browser handles dependency resolution. No bundler needed in development. Each file is a clean, isolated module with explicit imports/exports.
 
 ### Data-Driven Architecture
-All game content lives in JSON files. The engine reads data, never hardcodes it. Adding a monster means editing one JSON file — zero code changes. For production, the data is inlined into JS modules (saving 4 HTTP requests) via `node scripts/sync-data.js`.
+All game content lives in JSON files. The engine reads data, never hardcodes it. Adding a monster means editing one JSON file — zero code changes. For production, the data is inlined into JS modules (saving 5 HTTP requests) via `node scripts/sync-data.js`.
 
 ### Graceful Sprite Fallbacks
 PNGs are optional. If a sprite fails to load, the renderer draws colored shapes with directional indicators. The player becomes a blue square with a pointing triangle. Monsters become colored rectangles. The game is fully playable without a single image file.
@@ -73,8 +71,8 @@ PNGs are optional. If a sprite fails to load, the renderer draws colored shapes 
 
 | Mode | Requests |
 |------|:--------:|
-| Dev (ES modules, JSON fetches, PNGs) | ~27 |
-| Dev (inlined data, PNGs) | ~23 |
+| Dev (ES modules, JSON fetches, PNGs) | ~54 |
+| Dev (inlined data, PNGs) | ~49 |
 | **Single-file build** | **1** |
 
 ## The Zero-Dependency Philosophy

@@ -11,7 +11,12 @@ import { initTileTextures } from './sprites/tiles.js';
 import { MONSTERS } from './data/monsters.js';
 import { MOVES } from './data/moves.js';
 import { TYPES } from './data/types.js';
-import { startTransition, updateTransition, drawTransitionOverlay } from './engine/transition.js';
+import { EVOLUTIONS } from './data/evolutions.js';
+import { startTransition, updateTransition, getTransition, drawTransitionOverlay } from './engine/transition.js';
+import { initTracker, logEvent, getEvents } from './evolution/tracker.js';
+import { setEvolutionData, setMonstersDataForEvolution, checkPartyEvolutions, applyEvolution, setPendingEvolution, getPendingEvolution, clearPendingEvolution, getEvolutionProgress } from './evolution/evolution.js';
+import { startEvolutionAnimation, updateEvolutionAnimation, drawEvolutionAnimation, clearEvolutionAnimation } from './evolution/animation.js';
+import { playDevEvent } from './audio/sound.js';
 
 let lastTime = 0;
 
@@ -19,10 +24,19 @@ async function init() {
   const canvas = document.getElementById('game');
   initRenderer(canvas);
 
-  // Wire up data modules
+  // Wire up data modules (inlined from JSON — no fetch overhead)
   setMonstersData(MONSTERS);
   setMovesData(MOVES);
   setTypeData(TYPES);
+  setEvolutionData(EVOLUTIONS);
+  setMonstersDataForEvolution(MONSTERS);
+
+  // Initialize dev activity tracker
+  initTracker();
+
+  // Try to import events from git hook file
+  const { importFromFile } = await import('./evolution/tracker.js');
+  await importFromFile();
 
   // Preload sprite images (gracefully falls back if PNGs don't exist yet)
   await preloadAll(MONSTERS);
@@ -34,8 +48,43 @@ async function init() {
   const starter = { ...MONSTERS[0], currentHP: MONSTERS[0].hp };
   player.party.push(starter);
 
+  // Expose dev event logging to the console and to the page
+  window.bugmon = {
+    log: (eventType) => {
+      const result = logEvent(eventType);
+      if (result) {
+        playDevEvent();
+        console.log(`[BugMon] Logged: ${eventType}`);
+        checkForEvolutions();
+      }
+      return result;
+    },
+    events: getEvents,
+    progress: () => {
+      const player = getPlayer();
+      return player.party.map(mon => ({
+        name: mon.name,
+        evolution: getEvolutionProgress(mon)
+      }));
+    }
+  };
+
   // Start game loop
   requestAnimationFrame(loop);
+}
+
+function checkForEvolutions() {
+  const player = getPlayer();
+  const state = getState();
+  if (state !== STATES.EXPLORE) return;
+
+  const evo = checkPartyEvolutions(player.party);
+  if (evo) {
+    setPendingEvolution(evo);
+    const evolved = applyEvolution(player.party, evo.partyIndex, evo.to);
+    startEvolutionAnimation(evo.from, evo.to);
+    setState(STATES.EVOLVING);
+  }
 }
 
 function loop(timestamp) {
@@ -69,6 +118,13 @@ function update(dt) {
     }
   } else if (state === STATES.BATTLE) {
     updateBattle(dt);
+  } else if (state === STATES.EVOLVING) {
+    const done = updateEvolutionAnimation(dt);
+    if (done) {
+      clearEvolutionAnimation();
+      clearPendingEvolution();
+      setState(STATES.EXPLORE);
+    }
   }
 }
 
@@ -85,11 +141,16 @@ function render() {
     // HUD - show party info
     const player = getPlayer();
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(0, 0, 200, 20);
+    ctx.fillRect(0, 0, 480, 20);
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
     const mon = player.party[0];
-    ctx.fillText(`${mon.name} HP:${Math.ceil(mon.currentHP)}/${mon.hp} Party:${player.party.length}`, 5, 14);
+    const evoProgress = getEvolutionProgress(mon);
+    let hudText = `${mon.name} HP:${Math.ceil(mon.currentHP)}/${mon.hp} Party:${player.party.length}`;
+    if (evoProgress) {
+      hudText += ` | ${evoProgress.eventLabel}:${evoProgress.current}/${evoProgress.required}`;
+    }
+    ctx.fillText(hudText, 5, 14);
   } else if (state === STATES.BATTLE_TRANSITION) {
     drawTransitionOverlay(ctx, 480, 320, () => {
       drawMap(getMap());
@@ -100,6 +161,8 @@ function render() {
     if (battle) {
       drawBattle(battle, movesData, TYPES.typeColors);
     }
+  } else if (state === STATES.EVOLVING) {
+    drawEvolutionAnimation(ctx, 480, 320);
   }
 }
 

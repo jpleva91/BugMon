@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Play Now](https://img.shields.io/badge/Play-GitHub%20Pages-orange.svg)](https://jpleva91.github.io/BugMon/)
-[![Size](https://img.shields.io/badge/gzipped-12.5_KB-brightgreen.svg)](LIGHTWEIGHT.md)
+[![Size](https://img.shields.io/badge/gzipped-~21_KB-brightgreen.svg)](LIGHTWEIGHT.md)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](LIGHTWEIGHT.md)
 
 > The Pokémon game developers deserve.
@@ -122,6 +122,17 @@ Each type also has cross-cycle matchups. Full chart:
 | **RegexDenial** | Testing | 34 | 8 | 5 | 4 | AssertionError, ThreadLock |
 
 </details>
+
+## Contribute a BugMon
+
+No coding required! Submit your own BugMon in 4 steps:
+
+1. [Open a new BugMon submission](../../issues/new?template=new-bugmon.yml)
+2. Fill out the form with your BugMon's name, type, stats, and moves
+3. A bot will validate your submission and show a battle preview
+4. Once approved by a maintainer, your BugMon joins the game!
+
+See the [issue template](../../issues/new?template=new-bugmon.yml) to get started.
 
 ## Run Locally
 

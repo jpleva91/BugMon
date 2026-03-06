@@ -3,10 +3,12 @@
 // Zero dependencies — uses only Node.js built-ins
 // Usage: node scripts/build.js [--no-sprites]
 
-const fs = require('fs');
-const path = require('path');
-const zlib = require('zlib');
+import fs from 'fs';
+import path from 'path';
+import zlib from 'zlib';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 
@@ -18,6 +20,8 @@ const MODULE_ORDER = [
   'data/moves.js',
   'data/types.js',
   'data/mapData.js',
+  'data/evolutions.js',
+  'engine/events.js',
   'engine/state.js',
   'audio/sound.js',
   'engine/input.js',
@@ -28,7 +32,12 @@ const MODULE_ORDER = [
   'world/encounters.js',
   'engine/renderer.js',
   'engine/transition.js',
+  'battle/damage.js',
+  'battle/battle-core.js',
   'battle/battleEngine.js',
+  'evolution/tracker.js',
+  'evolution/evolution.js',
+  'evolution/animation.js',
   'game.js',
 ];
 
@@ -36,19 +45,31 @@ console.log('Building BugMon single-file distribution...\n');
 
 // --- Read and process all modules ---
 function readModule(relPath) {
-  return fs.readFileSync(path.join(ROOT, relPath), 'utf8');
+  const full = path.join(ROOT, relPath);
+  if (!fs.existsSync(full)) {
+    console.warn(`  warning: ${relPath} not found, skipping`);
+    return '';
+  }
+  return fs.readFileSync(full, 'utf8');
 }
 
 function stripImportsExports(code) {
-  // Remove import lines
+  // Remove import lines (named imports, default imports, side-effect imports)
   code = code.replace(/^import\s+\{[^}]*\}\s+from\s+['"][^'"]+['"];?\s*$/gm, '');
+  code = code.replace(/^import\s+\w+\s+from\s+['"][^'"]+['"];?\s*$/gm, '');
   code = code.replace(/^import\s+['"][^'"]+['"];?\s*$/gm, '');
+  // Remove dynamic imports (await import(...))
+  code = code.replace(/^.*await\s+import\s*\([^)]*\).*$/gm, '');
   // Convert "export function" → "function"
   code = code.replace(/^export\s+function\s/gm, 'function ');
+  // Convert "export class" → "class"
+  code = code.replace(/^export\s+class\s/gm, 'class ');
   // Convert "export const/let/var" → "const/let/var"
   code = code.replace(/^export\s+(const|let|var)\s/gm, '$1 ');
   // Remove "export { ... };" lines
   code = code.replace(/^export\s+\{[^}]*\};?\s*$/gm, '');
+  // Remove "export default" lines
+  code = code.replace(/^export\s+default\s/gm, '');
   return code;
 }
 
@@ -126,6 +147,7 @@ let bundle = '(function() {\n"use strict";\n\n';
 
 for (const mod of MODULE_ORDER) {
   const raw = readModule(mod);
+  if (!raw) continue;
   const stripped = stripImportsExports(raw);
   bundle += `// --- ${mod} ---\n${stripped}\n\n`;
 }

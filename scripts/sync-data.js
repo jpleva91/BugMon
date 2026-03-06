@@ -3,9 +3,11 @@
 // Zero dependencies — uses only Node.js built-ins
 // Usage: node scripts/sync-data.js
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '..', 'data');
 
 function read(file) {
@@ -63,10 +65,21 @@ write('mapData.js',
   'export const MAP_DATA = ' + JSON.stringify(map) + ';\n'
 );
 
+// Evolutions
+const evolutions = read('evolutions.json');
+write('evolutions.js',
+  '// Evolution data — inlined from evolutions.json\n' +
+  '// To regenerate: node scripts/sync-data.js\n' +
+  'export const EVOLUTIONS = ' + JSON.stringify(evolutions, null, 2)
+    .replace(/"(\w+)":/g, '$1:')
+    .replace(/"/g, "'")
+  + ';\n'
+);
+
 // Report
-const jsonSize = ['monsters.json', 'moves.json', 'types.json', 'map.json']
+const jsonSize = ['monsters.json', 'moves.json', 'types.json', 'map.json', 'evolutions.json']
   .reduce((sum, f) => sum + fs.statSync(path.join(dataDir, f)).size, 0);
-const jsSize = ['monsters.js', 'moves.js', 'types.js', 'mapData.js']
+const jsSize = ['monsters.js', 'moves.js', 'types.js', 'mapData.js', 'evolutions.js']
   .reduce((sum, f) => sum + fs.statSync(path.join(dataDir, f)).size, 0);
 
 console.log(`\nJSON source:  ${jsonSize} bytes`);
