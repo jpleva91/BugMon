@@ -1,6 +1,8 @@
 // Terminal renderer — ANSI-colored output for BugMon encounters
 // Zero dependencies: raw ANSI escape codes
 
+import { renderBugDexContributionPrompt, BUGDEX_CONTRIBUTION_MIN } from './contribute.js';
+
 // ── ANSI helpers ──
 
 const ESC = '\x1b[';
@@ -198,6 +200,11 @@ export function renderBugDex(dexData, allMonsters) {
     } else {
       lines.push(`  ${color('#' + String(monster.id).padStart(2, '0'), 'gray')} ${dim('???'.padEnd(20))} ${dim('???'.padEnd(10))}`);
     }
+  }
+
+  // Contribution nudge for engaged users
+  if (discovered >= BUGDEX_CONTRIBUTION_MIN) {
+    lines.push(...renderBugDexContributionPrompt(discovered));
   }
 
   lines.push('');
