@@ -1,0 +1,17 @@
+{
+  "name": "bugmon",
+  "version": "0.1.0",
+  "description": "Developer-themed monster battle game with a deterministic engine and simulation tooling",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "battle": "tsx src/cli/battle.ts",
+    "simulate": "tsx src/cli/simulate.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.7.0",
+    "@types/node": "^20.11.0"
+  },
+  "license": "MIT"
+}
