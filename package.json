@@ -1,0 +1,34 @@
+{
+  "name": "bugmon",
+  "version": "0.1.0",
+  "description": "Pokémon-style monster encounters for your bugs. Catch errors, defeat monsters.",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "bugmon": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node cli/index.ts",
+    "start": "node dist/cli/index.js"
+  },
+  "keywords": [
+    "debugging",
+    "cli",
+    "pokemon",
+    "bugs",
+    "developer-tools",
+    "fun"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
