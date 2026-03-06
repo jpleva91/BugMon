@@ -111,7 +111,7 @@
     "attack": 4,
     "defense": 5,
     "speed": 1,
-    "moves": ["coredump", "hotreload"],
+    "moves": ["coredump", "reboot"],
     "color": "#e74c3c",
     "sprite": "infiniteloop",
     "description": "A massive red ouroboros-like creature endlessly chasing its own tail in a perfect circle. Its body is covered in repeating arrow symbols all pointing forward. Its eyes are dizzy spirals. Loading spinners orbit around it. It has been running since the program started and shows no signs of stopping. Despite its size, it moves incredibly slowly because it is stuck repeating the same path forever."
@@ -137,7 +137,7 @@
     "attack": 9,
     "defense": 4,
     "speed": 6,
-    "moves": ["bufferoverrun", "bluescreen"],
+    "moves": ["bufferoverrun", "reboot"],
     "color": "#cb4335",
     "sprite": "stackoverflow",
     "description": "A towering red creature made of stacked rectangular frames, each one representing a function call. It grows taller and taller as frames pile on top, wobbling precariously. Its eyes peek out from near the top of the stack, looking panicked. The bottom frames are crushed under the weight. When it attacks, the whole stack comes crashing down in a spectacular collapse."

@@ -135,6 +135,14 @@ function doAttack(attacker, move, defender, callback) {
   let msg = `${attacker.name} used ${move.name}! ${damage} damage!`;
   if (effectiveness > 1.0) msg += ' Super effective!';
   else if (effectiveness < 1.0) msg += ' Not very effective...';
+
+  // Reboot heals the attacker for half the damage dealt
+  if (move.id === 'reboot') {
+    const heal = Math.floor(damage / 2);
+    attacker.currentHP = Math.min(attacker.hp, attacker.currentHP + heal);
+    if (heal > 0) msg += ` Rebooted for ${heal} HP!`;
+  }
+
   showMessage(msg, callback);
 }
 

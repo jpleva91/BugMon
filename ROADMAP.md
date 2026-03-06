@@ -75,7 +75,7 @@ V1 -> V1.1 -> V2 -> V2.5 -> V2.1 -> V3 -> V4 -> V5 -> V6 -> V7
 - [ ] Pixel art sprites for 8 new BugMon (currently using color fallbacks) -- `[L]`
 - [ ] Show move descriptions and types in battle UI -- `[M]`
 - [ ] Move categories: damage, heal, status, utility -- `[S]`
-- [ ] Reboot move (planned in V2 but not yet implemented) -- `[S]`
+- [x] Reboot move (planned in V2 but not yet implemented) -- `[S]`
 
 ## V3 -- Save/Load & Core QoL
 
@@ -268,7 +268,7 @@ V1 -> V1.1 -> V2 -> V2.5 -> V2.1 -> V3 -> V4 -> V5 -> V6 -> V7
 | PipelineFailure | 7 | Damage | DONE | Build failed |
 | AssertionError | 8 | Damage | DONE | Expected vs actual |
 | MockOverride | 6 | Damage | DONE | Replaces the real thing |
-| Reboot | 7 | Utility | PLANNED | Full system restart |
+| Reboot | 7 | Utility | DONE | Full system restart |
 | CtrlZ | -- | Heal | IDEA | Undo last damage taken |
 | DDoS | 6x3 | Damage | IDEA | Multi-hit, 3 weak strikes |
 | Obfuscate | -- | Status | IDEA | Sharply lowers enemy accuracy |
