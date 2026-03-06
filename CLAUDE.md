@@ -1,137 +1,254 @@
-# CLAUDE.md — BugMon AI Assistant Guide
+# CLAUDE.md — AI Assistant Guide for BugMon
 
 ## Project Overview
 
-BugMon is a Pokémon-inspired monster-taming RPG where the monsters are software bugs (NullPointer, MemoryLeak, RaceCondition, etc.). Built with vanilla JavaScript, HTML5 Canvas, and Web Audio API — **zero external dependencies**.
+BugMon is a Pokémon-style monster-taming RPG browser game themed around software bugs. Players explore a tile-based world, encounter wild "BugMon" (creatures named after programming bugs like NullPointer, MergeConflict, StackOverflow), battle them with turn-based combat, and catch them for their party. BugMon evolve based on real developer activity (commits, PRs merged, bugs fixed) instead of XP grinding.
 
-## Quick Reference
+**Key characteristics:**
+- 100% client-side, zero external dependencies
+- Vanilla JavaScript (ES6 modules), HTML5 Canvas 2D, Web Audio API
+- No build tools, no bundler, no framework
+- Deployed to GitHub Pages
+- Community BugMon submissions via GitHub Issues + automated validation
+
+## Quick Start
+
+No build step required. Serve with any static file server:
 
 ```bash
-# Run locally (any static file server works)
-python3 -m http.server
-# Open http://localhost:8000
-
-# Validate game data
-node .github/scripts/validate-data.mjs
+npm run serve
+# or: python3 -m http.server
+# Then open http://localhost:8000
 ```
-
-There is no build step, no package manager, no bundler, no transpiler.
 
 ## Project Structure
 
 ```
-index.html              # Entry point: canvas, touch controls, loads game.js
-game.js                 # Game loop, initialization, data loading
-engine/                 # Core framework
-  state.js              # Game state machine (EXPLORE, BATTLE_TRANSITION, BATTLE, MENU)
-  input.js              # Unified keyboard/touch input
-  renderer.js           # All Canvas 2D drawing
-  transition.js         # Battle transition animations
-world/                  # Overworld systems
-  map.js                # Map data, tile queries, collision
-  player.js             # Player movement, party management
-  encounters.js         # Wild encounter detection (10% in tall grass)
-battle/                 # Turn-based battle engine
-  battleEngine.js       # Battle state machine, turn resolution
-  damage.js             # Damage calculation with type effectiveness
-audio/
-  sound.js              # Synthesized sound effects (Web Audio API, no audio files)
-sprites/
-  sprites.js            # Image loader with preload and fallback
-  tiles.js              # Procedural tile textures and battle backgrounds
-  *.png                 # Pixel art sprites (64x64 monsters, 32x32 player)
-data/                   # Game content (data-driven, edit JSON to add content)
-  monsters.json         # 20 BugMon definitions
-  moves.json            # 25 moves
-  types.json            # 8 types with effectiveness chart
-  map.json              # 15x10 tile grid (0=ground, 1=wall, 2=tall grass)
+BugMon/
+├── index.html              # Entry point (canvas, inline CSS, touch controls)
+├── game.js                 # Game loop orchestration (entry point for JS)
+├── simulate.js             # Battle simulator CLI (node simulate.js)
+├── package.json            # Node.js config for scripts
+│
+├── engine/                 # Core framework systems
+│   ├── state.js            # Game state machine (EXPLORE, BATTLE_TRANSITION, BATTLE, MENU)
+│   ├── input.js            # Unified keyboard + touch input
+│   ├── renderer.js         # Canvas 2D drawing
+│   ├── transition.js       # Battle transition animation
+│   ├── entities.js         # Lightweight entity model (BugMon, Player, NPC, Item)
+│   └── events.js           # EventBus for decoupled communication between systems
+│
+├── world/                  # Overworld / exploration
+│   ├── map.js              # Map data, tile queries, collision
+│   ├── player.js           # Player state, movement, party
+│   └── encounters.js       # Random wild encounter logic (10% in tall grass)
+│
+├── battle/                 # Combat systems
+│   ├── battle-core.js      # Pure battle engine (no UI/audio/DOM) — two APIs
+│   ├── battleEngine.js     # UI-connected battle state machine
+│   └── damage.js           # Damage calculation formula
+│
+├── evolution/              # Evolution system
+│   ├── evolution.js        # Checks conditions, triggers evolutions
+│   ├── tracker.js          # Dev activity tracker (localStorage + .events.json)
+│   └── animation.js        # Evolution visual sequence (flash, morph, reveal)
+│
+├── audio/                  # Sound synthesis (no audio files)
+│   └── sound.js            # Web Audio API synthesized effects
+│
+├── sprites/                # Pixel art and rendering
+│   ├── sprites.js          # Image loader with preload/fallback
+│   ├── tiles.js            # Procedural tile texture generation
+│   └── *.png               # 64x64 battle sprites, 32x32 player sprites
+│
+├── data/                   # Game content (JSON, data-driven)
+│   ├── monsters.json       # 30 BugMon definitions (stats, moves, types, evolutions)
+│   ├── moves.json          # Move definitions
+│   ├── types.json          # 7 types + effectiveness chart
+│   ├── evolutions.json     # Evolution chains with dev-activity triggers
+│   └── map.json            # 15x10 tile grid
+│
+├── simulation/             # Legacy headless battle simulation
+│   ├── cli.js              # CLI entry point (seeded RNG version)
+│   └── ...                 # Supporting modules
+│
+├── hooks/                  # Git hooks for dev activity tracking
+│   ├── post-commit         # Increments commit counter in .events.json
+│   └── post-merge          # Increments merge counter in .events.json
+│
+├── .github/
+│   ├── workflows/
+│   │   ├── deploy.yml          # GitHub Pages auto-deploy on push to main
+│   │   ├── validate-bugmon.yml # Validates community BugMon submissions
+│   │   └── approve-bugmon.yml  # Auto-adds approved BugMon to game data
+│   ├── scripts/
+│   │   ├── validate-submission.cjs  # Parses + validates issue form data
+│   │   ├── battle-preview.cjs       # Generates battle preview for submissions
+│   │   └── generate-bugmon.cjs      # Generates BugMon JSON from approved issue
+│   └── ISSUE_TEMPLATE/
+│       └── new-bugmon.yml      # Issue form for community BugMon submissions
+│
+├── ARCHITECTURE.md         # Detailed technical architecture
+├── ROADMAP.md              # Milestone planning and feature backlog
+└── README.md               # User-facing guide
 ```
 
-Total codebase: ~1,200 lines of JavaScript across 13 source files.
+## Development Commands
 
-## Architecture & Patterns
+```bash
+# Serve locally
+npm run serve
 
-**ES6 Modules** — All JS uses `import`/`export`. No classes; modules export functions.
+# Run battle simulation (random matchup, verbose)
+npm run simulate
 
-**Data injection via setter functions** — Modules receive data through setter functions (e.g., `setMonstersData()`) rather than importing data files directly. This avoids async import complexity.
+# Specific matchup
+npm run simulate -- NullPointer Deadlock
 
-**Game loop** — `requestAnimationFrame` drives a standard `update(dt)` → `render()` → `clearJustPressed()` cycle at 60 FPS.
+# Statistical analysis
+npm run simulate -- NullPointer Deadlock --runs 1000
 
-**Data-driven design** — All game content lives in JSON under `data/`. Adding a new BugMon or move requires only JSON edits, no code changes.
+# Full roster round-robin
+npm run simulate -- --all
 
-**Graceful degradation** — Sprites fall back to colored rectangles if PNGs fail to load. Audio handles suspended contexts. Touch controls auto-show on mobile.
+# Legacy simulation (seeded RNG)
+npm run simulate:quick   # 1,000 battles
+npm run simulate:full    # 50,000 battles
+```
 
-**Canvas rendering** — 480×320 canvas (15×10 tiles at 32px). `imageSmoothingEnabled = false` for crisp pixel art.
+## Architecture & Key Patterns
 
-## Code Conventions
+### ES6 Modules
+All source uses ES6 `import`/`export`. No CommonJS, no bundler. Browser loads `game.js` as a module via `<script type="module">`. GitHub scripts use `.cjs` extension for CommonJS (Node.js workflow context).
 
-- **Naming**: camelCase for functions/variables, UPPER_CASE for constants
-- **Style**: Simple, readable code over abstractions; no over-engineering
-- **Comments**: Sparse — only where intent isn't obvious from the code
-- **Error handling**: Graceful degradation, not defensive exception catching
-- **State**: Single mutable state per module; no framework or event bus
-- **Input**: Unified `wasPressed()`/`isDown()` API abstracts keyboard and touch
+### Data Injection via Setters
+JSON data files are loaded asynchronously with `fetch()` in `game.js`, then passed to modules through setter functions:
+```js
+// In game.js
+const monsters = await fetch('data/monsters.json').then(r => r.json());
+setMonstersData(monsters);
+```
+Do NOT import JSON directly in modules — always receive data through the existing setter pattern.
 
-## Data File Formats
+### Event Bus
+`engine/events.js` provides a decoupled pub/sub system for cross-module communication:
+```js
+import { eventBus, Events } from './events.js';
+eventBus.on(Events.BUGMON_FAINTED, (data) => { ... });
+eventBus.emit(Events.BUGMON_FAINTED, { name: 'NullPointer' });
+```
 
-**monsters.json** entries:
+### Entity System
+`engine/entities.js` provides lightweight entity factories (`createBugMon`, `createPlayer`, `createNPC`, `createItem`) with auto-incrementing IDs.
+
+### Game State Machine
+Defined in `engine/state.js`. Four states:
+- **EXPLORE** — grid-based overworld movement
+- **BATTLE_TRANSITION** — flash + fade animation (860ms)
+- **BATTLE** — turn-based combat with menu system
+- **MENU** — settings/party management (future)
+
+### Battle System
+Two battle APIs coexist in `battle/battle-core.js`:
+1. **Original API** (`executeTurn`, `simulateBattle`) — used by `simulate.js` and `battleEngine.js`
+2. **Spec-based API** (`resolveTurn`, `createPureBattleState`) — fully immutable, PP tracking, accuracy
+
+Turn order: faster BugMon goes first (ties: player wins). Battle uses a message queue pattern with callbacks for action chaining.
+
+### Damage Formula
+```
+damage = (power + attack - floor(defense / 2) + random(1-3)) * typeMultiplier
+```
+Type multipliers: 0.5x (not effective), 1.0x (neutral), 1.5x (super effective).
+
+### Evolution System
+BugMon evolve based on real developer activity tracked via git hooks and localStorage:
+- `evolution/tracker.js` — tracks events (commits, PRs merged, bugs fixed, etc.)
+- `evolution/evolution.js` — checks if conditions are met for evolution
+- `evolution/animation.js` — renders the evolution visual sequence
+- `data/evolutions.json` — defines evolution chains and trigger conditions
+- `hooks/post-commit` / `hooks/post-merge` — write to `.events.json` for the tracker
+
+### Sprite System
+PNG sprites are preloaded at startup. If a sprite fails to load, a colored rectangle fallback is rendered. Tile textures are procedurally generated at runtime (no tile image files).
+
+## Coding Conventions
+
+- **camelCase** for functions and variables
+- **UPPER_SNAKE_CASE** for constants (e.g., `STATES`, `TILE`, `Events`)
+- **const/let** only, no `var`
+- Arrow functions preferred
+- No external dependencies — keep it zero-dependency
+- `imageSmoothingEnabled = false` on canvas for crisp pixel art
+- All audio is synthesized at runtime via Web Audio API (no audio files)
+- Try-catch around AudioContext creation (browser compatibility)
+- Console.error for startup failures, null checks for optional data
+
+## Data Formats
+
+### monsters.json
 ```json
-{
-  "id": 1, "name": "NullPointer", "type": "memory",
+{ "id": 1, "name": "NullPointer", "type": "backend",
   "hp": 30, "attack": 8, "defense": 4, "speed": 6,
-  "moves": ["segfault", "hotfix"],
+  "moves": ["segfault", "unhandledexception", "memoryaccess"],
   "color": "#e74c3c", "sprite": "nullpointer",
-  "description": "A spectral pointer..."
-}
+  "rarity": "common", "theme": "runtime error",
+  "evolution": "OptionalChaining", "evolvesTo": 21,
+  "passive": null, "description": "..." }
 ```
-Stat ranges: HP 1–100, ATK/DEF/SPD 1–20.
+Rarities: `common`, `uncommon`, `legendary`, `evolved`.
 
-**moves.json** entries:
+### moves.json
 ```json
-{ "id": "segfault", "name": "SegFault", "power": 10, "type": "memory" }
+{ "id": "segfault", "name": "SegFault", "power": 10, "type": "backend" }
 ```
-Power range: 1–20.
 
-**types.json**: 8 types (memory, logic, runtime, syntax, frontend, backend, devops, testing) with a full 8×8 effectiveness matrix (1.0 normal, 1.5 super effective, 0.5 not very effective).
+### types.json
+7 types: `frontend`, `backend`, `devops`, `testing`, `architecture`, `security`, `ai`. Effectiveness chart is a nested object mapping attacker type → defender type → multiplier.
 
-**map.json**: `{ "width": 15, "height": 10, "tiles": [[...]] }` — tile values 0/1/2.
+### evolutions.json
+Defines evolution chains with dev-activity triggers:
+```json
+{ "id": "callback_chain", "name": "Async Evolution",
+  "stages": [{ "monsterId": 2, "name": "CallbackHell" }, ...],
+  "triggers": [{ "from": 2, "to": 23,
+    "condition": { "event": "commits", "count": 10 },
+    "description": "Make 10 commits" }] }
+```
+
+### map.json
+`{ "width": 15, "height": 10, "tiles": [[...], ...] }` — tile values: 0=ground, 1=wall, 2=grass.
 
 ## CI/CD
 
-**Deploy** (`.github/workflows/deploy.yml`): Push to `main` or `master` auto-deploys to GitHub Pages.
-
-**Validate** (`.github/workflows/validate.yml`): PRs touching `data/**` trigger JSON validation via `.github/scripts/validate-data.mjs` (Node.js v20). Checks:
-- Valid JSON syntax
-- Monster stats within allowed ranges
-- Unique IDs and names
-- Move references exist in moves.json
-- Complete 8×8 type effectiveness chart
-- Move power within range
+- **Deploy**: GitHub Pages auto-deploy on push to `main` or `master` (`.github/workflows/deploy.yml`). No build step.
+- **BugMon Submissions**: Community can submit new BugMon via GitHub Issue template. `validate-bugmon.yml` auto-validates and previews. `approve-bugmon.yml` auto-adds approved submissions to game data.
 
 ## Testing
 
-No formal test framework. Testing is manual (play the game locally). Data validation is automated in CI for PRs that modify `data/` files. Run validation locally with:
+No formal test framework. Validation is done through:
+1. **Manual browser testing** — open in browser, play the game
+2. **Battle simulation CLI** (`npm run simulate -- --all --runs 100`) — round-robin roster analysis to verify balance
 
-```bash
-node .github/scripts/validate-data.mjs
-```
+## When Adding New Content
 
-## Common Tasks
+### New BugMon
+1. Add entry to `data/monsters.json` following existing schema (include `rarity`, `theme`, `passive`, `evolution` fields)
+2. Add 64x64 PNG sprite to `sprites/` (filename matches `sprite` field)
+3. Ensure moves referenced exist in `data/moves.json`
+4. If it has an evolution, add the evolved form and update `data/evolutions.json`
+5. Run simulation to verify balance: `npm run simulate -- --all`
 
-**Add a new BugMon**: Edit `data/monsters.json` — add an entry with a unique id, name, type, stats, moves, color, and sprite field. Optionally add a 64×64 PNG sprite in `sprites/`.
+### New Moves
+1. Add entry to `data/moves.json` following existing schema
+2. Ensure the move's `type` exists in `data/types.json`
 
-**Add a new move**: Edit `data/moves.json` — add an entry with unique id, display name, power, and type.
+### New Evolution Chain
+1. Add chain to `data/evolutions.json` with stages and trigger conditions
+2. Add evolved BugMon entries to `data/monsters.json` with `rarity: "evolved"` and `evolvedFrom` field
+3. Set `evolvesTo` on the base BugMon pointing to the evolved form's ID
 
-**Modify the map**: Edit `data/map.json` — change tile values in the grid (0=ground, 1=wall, 2=tall grass). Map is 15×10.
-
-**Add a sprite**: Place a 64×64 PNG in `sprites/` named to match the monster's `sprite` field. Player sprites are 32×32. See `sprites/SPRITE_GUIDE.md` for art specs.
-
-**Modify game logic**: Edit the relevant module under `engine/`, `world/`, or `battle/`. The entry point is `game.js`.
-
-## Key Documentation
-
-- `README.md` — Overview, features, how to play
-- `ARCHITECTURE.md` — Technical deep dive, module dependency graph, design decisions
-- `CONTRIBUTING.md` — Contributor guide, step-by-step content addition
-- `ROADMAP.md` — V1–V8 milestone planning and status
-- `sprites/SPRITE_GUIDE.md` — Sprite art specifications
+### New Map Tiles
+1. Add tile type constant and collision logic in `world/map.js`
+2. Add procedural texture generation in `sprites/tiles.js`
+3. Update `data/map.json` with new tile values
