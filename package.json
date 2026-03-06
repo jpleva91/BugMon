@@ -1,6 +1,6 @@
 {
   "name": "bugmon",
-  "version": "0.2.0",
+  "version": "2.0.0",
   "description": "A Pokémon-style browser RPG themed around software bugs",
   "type": "module",
   "scripts": {
