@@ -9,6 +9,7 @@ import { parseStackTrace, getUserFrame } from '../core/stacktrace-parser.js';
 import { matchMonster } from '../monsters/matcher.js';
 import { recordEncounter } from '../bugdex/bugdex.js';
 import { renderEncounter, renderEncounterPrompt } from '../ui/terminal-renderer.js';
+import { renderContributionPrompt, LOW_CONFIDENCE_THRESHOLD } from '../ui/contribute.js';
 import { interactiveCatch } from '../core/catch.js';
 
 /**
@@ -128,6 +129,11 @@ async function processInteractiveQueue(queue, options) {
       process.stderr.write(`  \x1b[33m+50 XP (catch bonus)\x1b[0m\n\n`);
     }
 
+    // Suggest contributing if the match was weak
+    if (confidence < LOW_CONFIDENCE_THRESHOLD) {
+      renderContributionPrompt();
+    }
+
     // Offer to open in browser
     if (options.openBrowser && location?.file) {
       process.stderr.write(`  \x1b[2mOpen in browser: file://${location.file}${location.line ? '#L' + location.line : ''}\x1b[0m\n\n`);
@@ -165,5 +171,10 @@ function processErrors(text) {
     const parts = [`+${xpGained} XP`];
     if (isNew) parts.push('NEW BugDex entry!');
     process.stderr.write(`  ${parts.join(' | ')}\n\n`);
+
+    // Suggest contributing if the match was weak
+    if (confidence < LOW_CONFIDENCE_THRESHOLD) {
+      renderContributionPrompt();
+    }
   }
 }
