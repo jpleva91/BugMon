@@ -23,5 +23,6 @@
   { "id": "dockerkill", "name": "DockerKill", "power": 10, "type": "devops" },
   { "id": "pipelinefailure", "name": "PipelineFailure", "power": 7, "type": "devops" },
   { "id": "assertionerror", "name": "AssertionError", "power": 8, "type": "testing" },
-  { "id": "mockoverride", "name": "MockOverride", "power": 6, "type": "testing" }
+  { "id": "mockoverride", "name": "MockOverride", "power": 6, "type": "testing" },
+  { "id": "reboot", "name": "Reboot", "power": 7, "type": "runtime", "category": "utility" }
 ]

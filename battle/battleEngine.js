@@ -128,6 +128,14 @@ function executeTurn(playerMove) {
 }
 
 function doAttack(attacker, move, defender, callback) {
+  if (move.category === 'utility') {
+    // Utility moves heal the user instead of dealing damage
+    const healAmount = move.power + Math.floor(Math.random() * 3) + 1;
+    attacker.currentHP = Math.min(attacker.hp, attacker.currentHP + healAmount);
+    playAttack();
+    showMessage(`${attacker.name} used ${move.name}! Restored ${healAmount} HP!`, callback);
+    return;
+  }
   const typeChart = typeData ? typeData.effectiveness : null;
   const { damage, effectiveness } = calcDamage(attacker, move, defender, typeChart);
   defender.currentHP -= damage;

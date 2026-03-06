@@ -111,7 +111,7 @@
     "attack": 4,
     "defense": 5,
     "speed": 1,
-    "moves": ["coredump", "hotreload"],
+    "moves": ["coredump", "hotreload", "reboot"],
     "color": "#e74c3c",
     "sprite": "infiniteloop",
     "description": "A massive red ouroboros-like creature endlessly chasing its own tail in a perfect circle. Its body is covered in repeating arrow symbols all pointing forward. Its eyes are dizzy spirals. Loading spinners orbit around it. It has been running since the program started and shows no signs of stopping. Despite its size, it moves incredibly slowly because it is stuck repeating the same path forever."
