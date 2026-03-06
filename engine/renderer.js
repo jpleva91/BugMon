@@ -68,7 +68,7 @@ export function drawPlayer(player) {
   ctx.fill();
 }
 
-export function drawBattle(battle, movesData, typeColors) {
+export function drawBattle(battle, movesData, typeColors, rarityTiers) {
   // Background
   const bg = getBattleBackground();
   if (bg) {
@@ -88,6 +88,9 @@ export function drawBattle(battle, movesData, typeColors) {
   ctx.fillText(battle.enemy.name, 300, 30);
   if (typeColors && battle.enemy.type) {
     drawTypeBadge(battle.enemy.name, 300, 30, battle.enemy.type, typeColors);
+  }
+  if (rarityTiers && battle.enemy.rarity && battle.enemy.rarity !== 'common') {
+    drawRarityBadge(300, 38, battle.enemy.rarity, rarityTiers);
   }
   drawHPBar(300, 110, 100, battle.enemy.currentHP, battle.enemy.hp);
 
@@ -160,6 +163,24 @@ function drawTypeBadge(name, nameX, nameY, type, typeColors) {
 
   ctx.fillStyle = '#fff';
   ctx.fillText(label, badgeX + 4, nameY - 1);
+}
+
+function drawRarityBadge(x, y, rarity, rarityTiers) {
+  const tier = rarityTiers[rarity];
+  if (!tier) return;
+  const label = tier.label;
+  ctx.font = '9px monospace';
+  const labelWidth = ctx.measureText(label).width;
+  const badgeW = labelWidth + 8;
+  const badgeH = 13;
+
+  ctx.fillStyle = tier.color;
+  ctx.beginPath();
+  ctx.roundRect(x, y, badgeW, badgeH, 3);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff';
+  ctx.fillText(label, x + 4, y + 10);
 }
 
 function drawHPBar(x, y, width, current, max) {

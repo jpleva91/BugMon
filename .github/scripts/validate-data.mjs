@@ -10,16 +10,18 @@ function error(file, msg) {
 }
 
 // Load all data files
-const [monstersRaw, movesRaw, typesRaw] = await Promise.all([
+const [monstersRaw, movesRaw, typesRaw, rarityRaw] = await Promise.all([
   readFile('data/monsters.json', 'utf-8'),
   readFile('data/moves.json', 'utf-8'),
   readFile('data/types.json', 'utf-8'),
+  readFile('data/rarity.json', 'utf-8'),
 ]);
 
-let monsters, moves, types;
+let monsters, moves, types, rarity;
 try { monsters = JSON.parse(monstersRaw); } catch { error('monsters.json', 'Invalid JSON'); }
 try { moves = JSON.parse(movesRaw); } catch { error('moves.json', 'Invalid JSON'); }
 try { types = JSON.parse(typesRaw); } catch { error('types.json', 'Invalid JSON'); }
+try { rarity = JSON.parse(rarityRaw); } catch { error('rarity.json', 'Invalid JSON'); }
 
 if (errors.length > 0) {
   errors.forEach(e => console.error(`ERROR: ${e}`));
@@ -28,6 +30,28 @@ if (errors.length > 0) {
 
 const validTypes = new Set(types.types);
 const moveIds = new Set(moves.map(m => m.id));
+const validRarities = rarity && rarity.tiers ? new Set(Object.keys(rarity.tiers)) : new Set();
+
+// Validate rarity.json
+if (rarity) {
+  if (!rarity.tiers || typeof rarity.tiers !== 'object') {
+    error('rarity.json', 'Missing "tiers" object');
+  } else {
+    for (const [key, tier] of Object.entries(rarity.tiers)) {
+      if (typeof tier.weight !== 'number' || tier.weight <= 0) {
+        error('rarity.json', `Tier "${key}" must have positive numeric "weight"`);
+      }
+      if (!tier.color) error('rarity.json', `Tier "${key}" missing "color"`);
+      if (!tier.label) error('rarity.json', `Tier "${key}" missing "label"`);
+      if (typeof tier.captureModifier !== 'number' || tier.captureModifier <= 0 || tier.captureModifier > 1) {
+        error('rarity.json', `Tier "${key}" captureModifier must be >0 and <=1, got ${tier.captureModifier}`);
+      }
+    }
+  }
+  if (!rarity.encounterText || typeof rarity.encounterText !== 'object') {
+    error('rarity.json', 'Missing "encounterText" object');
+  }
+}
 
 // Validate types.json
 for (const type of types.types) {
@@ -75,6 +99,13 @@ for (const mon of monsters) {
     error('monsters.json', `Monster "${mon.name}" has invalid type "${mon.type}"`);
   }
 
+  // Rarity
+  if (!mon.rarity) {
+    error('monsters.json', `Monster "${mon.name}" missing "rarity" field`);
+  } else if (!validRarities.has(mon.rarity)) {
+    error('monsters.json', `Monster "${mon.name}" has invalid rarity "${mon.rarity}"`);
+  }
+
   // Stat ranges
   if (typeof mon.hp !== 'number' || mon.hp < 1 || mon.hp > 100) {
     error('monsters.json', `Monster "${mon.name}" hp must be 1-100, got ${mon.hp}`);
@@ -118,5 +149,5 @@ if (errors.length > 0) {
   console.error('');
   process.exit(1);
 } else {
-  console.log(`Validation passed: ${monsters.length} monsters, ${moves.length} moves, ${types.types.length} types`);
+  console.log(`Validation passed: ${monsters.length} monsters, ${moves.length} moves, ${types.types.length} types, ${validRarities.size} rarity tiers`);
 }

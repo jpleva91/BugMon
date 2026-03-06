@@ -8,10 +8,13 @@ import {
   playAttack, playFaint, playCaptureSuccess,
   playCaptureFailure, playBattleVictory
 } from '../audio/sound.js';
+import { recordCapture } from '../ui/bugdex.js';
+import { recordStreakCapture } from '../ui/streak.js';
 
 let battle = null;
 let movesData = [];
 let typeData = null;
+let rarityData = null;
 let messageTimer = 0;
 const MESSAGE_DURATION = 1500;
 
@@ -21,6 +24,10 @@ export function setMovesData(data) {
 
 export function setTypeData(data) {
   typeData = data;
+}
+
+export function setRarityData(data) {
+  rarityData = data;
 }
 
 export function startBattle(wildMon) {
@@ -160,12 +167,19 @@ function enemyTurn(callback) {
 
 function attemptCapture() {
   const hpRatio = battle.enemy.currentHP / battle.enemy.hp;
-  const chance = (1 - hpRatio) * 0.5 + 0.1;
+  let chance = (1 - hpRatio) * 0.5 + 0.1;
+
+  // Rarer BugMon are harder to catch
+  if (rarityData && battle.enemy.rarity && rarityData.tiers[battle.enemy.rarity]) {
+    chance *= rarityData.tiers[battle.enemy.rarity].captureModifier;
+  }
 
   if (Math.random() < chance) {
     const player = getPlayer();
     const captured = { ...battle.enemy, currentHP: battle.enemy.currentHP };
     player.party.push(captured);
+    recordCapture(battle.enemy.id);
+    recordStreakCapture();
     playCaptureSuccess();
     showMessage(`Caught ${battle.enemy.name}!`, () => endBattle());
   } else {

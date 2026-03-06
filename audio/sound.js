@@ -183,3 +183,36 @@ export function playBattleVictory() {
     playToneDelayed(freq, dur, 'sine', 0.35, i * 140, true);
   });
 }
+
+// --- Rarity encounter sounds ---
+
+export function playRareEncounter() {
+  // Extended arpeggio with sine waves: C5, E5, G5, B5, C6
+  const notes = [523, 659, 784, 988, 1047];
+  notes.forEach((freq, i) => {
+    const dur = i === notes.length - 1 ? 0.2 : 0.12;
+    playToneDelayed(freq, dur, 'sine', 0.4, i * 100, true);
+  });
+}
+
+export function playVeryRareEncounter() {
+  // Sweep + chord tones: E5, G#5, B5, E6
+  playSweep(400, 1200, 0.4, 'sine', 0.25);
+  const chord = [659, 831, 988, 1319];
+  chord.forEach((freq, i) => {
+    playToneDelayed(freq, 0.3, 'sine', 0.3, 200 + i * 80, true);
+  });
+}
+
+export function playLegendaryEncounter() {
+  // Low rumble + ascending scale + sustained chord
+  playNoise(0.3, 0.15);
+  const scale = [262, 330, 392, 523, 659, 784, 1047]; // C4 to C6
+  scale.forEach((freq, i) => {
+    playToneDelayed(freq, 0.1, 'sine', 0.4, 150 + i * 80, true);
+  });
+  // Final sustained chord: C6 + E6 + G6
+  [1047, 1319, 1568].forEach(freq => {
+    playToneDelayed(freq, 0.4, 'sine', 0.35, 150 + scale.length * 80, true);
+  });
+}

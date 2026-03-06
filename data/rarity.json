@@ -1,0 +1,16 @@
+{
+  "tiers": {
+    "common":    { "weight": 40, "color": "#888888", "label": "COMMON",    "captureModifier": 1.0 },
+    "uncommon":  { "weight": 30, "color": "#2ecc71", "label": "UNCOMMON",  "captureModifier": 0.9 },
+    "rare":      { "weight": 18, "color": "#3498db", "label": "RARE",      "captureModifier": 0.75 },
+    "veryrare":  { "weight": 10, "color": "#9b59b6", "label": "VERY RARE", "captureModifier": 0.6 },
+    "legendary": { "weight": 2,  "color": "#f1c40f", "label": "LEGENDARY", "captureModifier": 0.4 }
+  },
+  "encounterText": {
+    "common":    null,
+    "uncommon":  null,
+    "rare":      "\u2726 RARE BUGMON ENCOUNTER \u2726",
+    "veryrare":  "\u2605 VERY RARE ENCOUNTER \u2605",
+    "legendary": "\u26a1 LEGENDARY BUGMON ENCOUNTER \u26a1"
+  }
+}
