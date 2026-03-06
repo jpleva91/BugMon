@@ -10,7 +10,9 @@
     "moves": ["segfault", "hotfix"],
     "color": "#e74c3c",
     "sprite": "nullpointer",
-    "description": "A ghostly red phantom shaped like a broken arrow. Its body is translucent crimson with hollow white eyes that stare into the void. Where its feet should be, the creature tapers into a jagged pointer arrow that points downward into nothingness. Small glitch artifacts flicker around its edges. It looks lost and confused, perpetually searching for something that doesn't exist."
+    "description": "A ghostly red phantom shaped like a broken arrow. Its body is translucent crimson with hollow white eyes that stare into the void. Where its feet should be, the creature tapers into a jagged pointer arrow that points downward into nothingness. Small glitch artifacts flicker around its edges. It looks lost and confused, perpetually searching for something that doesn't exist.",
+    "errorPatterns": ["TypeError: Cannot read propert", "TypeError: Cannot access", "undefined is not an object", "null is not an object", "Cannot read properties of null", "Cannot read properties of undefined"],
+    "fixTip": "Check if the object exists before accessing its properties. Use optional chaining (?.) or a null check."
   },
   {
     "id": 2,
@@ -23,7 +25,9 @@
     "moves": ["threadlock", "hotfix"],
     "color": "#f39c12",
     "sprite": "racecondition",
-    "description": "A frantic orange creature split down the middle into two halves, each trying to run in a different direction. The left half faces left with a panicked expression, the right half faces right looking equally stressed. Lightning-bolt speed lines trail behind it. Its body is angular and sleek like a racing animal. The split down its center glows bright yellow with electrical energy. Small duplicated afterimages blur around it."
+    "description": "A frantic orange creature split down the middle into two halves, each trying to run in a different direction. The left half faces left with a panicked expression, the right half faces right looking equally stressed. Lightning-bolt speed lines trail behind it. Its body is angular and sleek like a racing animal. The split down its center glows bright yellow with electrical energy. Small duplicated afterimages blur around it.",
+    "errorPatterns": ["race condition", "concurrent", "data race"],
+    "fixTip": "Ensure shared state is accessed sequentially. Use locks, mutexes, or serialize async operations."
   },
   {
     "id": 3,
@@ -36,7 +40,9 @@
     "moves": ["garbagecollect", "memorydump"],
     "color": "#2ecc71",
     "sprite": "memoryleak",
-    "description": "A bloated green blob creature that looks like it is slowly inflating and cannot stop growing. Its body is a round squishy mass of green slime with half-closed sleepy eyes, exhausted from carrying so much. Bright teal droplets drip constantly from its body and pool beneath it. Small floating 0s and 1s orbit around it like debris. A tiny faucet or pipe sticks out of its head, slowly dripping. It looks heavy, tired, and perpetually expanding."
+    "description": "A bloated green blob creature that looks like it is slowly inflating and cannot stop growing. Its body is a round squishy mass of green slime with half-closed sleepy eyes, exhausted from carrying so much. Bright teal droplets drip constantly from its body and pool beneath it. Small floating 0s and 1s orbit around it like debris. A tiny faucet or pipe sticks out of its head, slowly dripping. It looks heavy, tired, and perpetually expanding.",
+    "errorPatterns": ["heap out of memory", "out of memory", "ENOMEM", "memory leak", "allocation failed"],
+    "fixTip": "Look for growing arrays, unclosed event listeners, or circular references preventing garbage collection."
   },
   {
     "id": 4,
@@ -49,7 +55,9 @@
     "moves": ["mutex", "forcequit"],
     "color": "#8e44ad",
     "sprite": "deadlock",
-    "description": "Two interlocked purple chain-link creatures fused together in a death grip, each one grabbing the resource the other needs. They form a circular shape, like two snakes biting each other's tails. Their faces are strained and furious, teeth gritted, eyes bulging. Purple and violet energy crackles where their bodies interlock. Chains and padlock symbols orbit around them. Neither will ever let go."
+    "description": "Two interlocked purple chain-link creatures fused together in a death grip, each one grabbing the resource the other needs. They form a circular shape, like two snakes biting each other's tails. Their faces are strained and furious, teeth gritted, eyes bulging. Purple and violet energy crackles where their bodies interlock. Chains and padlock symbols orbit around them. Neither will ever let go.",
+    "errorPatterns": ["deadlock", "EDEADLK", "lock timeout"],
+    "fixTip": "Acquire locks in a consistent order. Consider using async/await instead of callbacks to simplify flow control."
   },
   {
     "id": 5,
@@ -62,7 +70,9 @@
     "moves": ["nullcheck", "rollback"],
     "color": "#e67e22",
     "sprite": "offbyone",
-    "description": "A small orange imp-like creature that is always slightly misaligned with reality. One eye is higher than the other, its teeth don't quite line up, and it stands half a step to the left of where it should be. Numbers float around it, all off by exactly one. It has a mischievous grin, knowing it causes subtle chaos everywhere it goes."
+    "description": "A small orange imp-like creature that is always slightly misaligned with reality. One eye is higher than the other, its teeth don't quite line up, and it stands half a step to the left of where it should be. Numbers float around it, all off by exactly one. It has a mischievous grin, knowing it causes subtle chaos everywhere it goes.",
+    "errorPatterns": ["off by one", "fencepost", "index.*boundary"],
+    "fixTip": "Double-check loop bounds: should it be < or <=? Does the index start at 0 or 1?"
   },
   {
     "id": 6,
@@ -75,7 +85,9 @@
     "moves": ["refactor", "patchdeploy"],
     "color": "#8e44ad",
     "sprite": "mergeconflict",
-    "description": "A creature torn between two versions of itself, with <<<< and >>>> markers visible on its body like battle scars. Its left side is one color scheme and its right side another, with a jagged line of equal signs running down the middle. It looks perpetually confused and conflicted, unable to decide which version of itself to be."
+    "description": "A creature torn between two versions of itself, with <<<< and >>>> markers visible on its body like battle scars. Its left side is one color scheme and its right side another, with a jagged line of equal signs running down the middle. It looks perpetually confused and conflicted, unable to decide which version of itself to be.",
+    "errorPatterns": ["SyntaxError: Unexpected token", "SyntaxError: Unexpected identifier", "SyntaxError: Missing", "Parsing error", "Unexpected end of input"],
+    "fixTip": "Check for typos, missing brackets, or unclosed strings near the reported line. Look for merge conflict markers (<<<<<<<)."
   },
   {
     "id": 7,
@@ -88,7 +100,9 @@
     "moves": ["hotreload", "bluescreen"],
     "color": "#c0392b",
     "sprite": "callbackhell",
-    "description": "A nightmarish red creature made of nested curly braces and parentheses, each layer deeper and more indented than the last. Its body spirals inward like a vortex of code. Flames lick at its edges and its eyes glow from deep within the nested layers. Arrow functions trail behind it like tentacles. It screams in async agony."
+    "description": "A nightmarish red creature made of nested curly braces and parentheses, each layer deeper and more indented than the last. Its body spirals inward like a vortex of code. Flames lick at its edges and its eyes glow from deep within the nested layers. Arrow functions trail behind it like tentacles. It screams in async agony.",
+    "errorPatterns": ["callback", "is not a function", "undefined is not a function"],
+    "fixTip": "Refactor nested callbacks to async/await. Check that callback arguments are functions, not undefined."
   },
   {
     "id": 8,
@@ -101,7 +115,9 @@
     "moves": ["nullcheck", "typemismatch"],
     "color": "#d4ac0d",
     "sprite": "heisenbug",
-    "description": "A shimmering golden insect that flickers in and out of visibility. When you look directly at it, it appears normal, but in your peripheral vision it glitches and distorts. It wears tiny spectacles and has a quantum uncertainty cloud around it. Debug symbols orbit its head like a halo. The harder you try to observe it, the more it changes behavior."
+    "description": "A shimmering golden insect that flickers in and out of visibility. When you look directly at it, it appears normal, but in your peripheral vision it glitches and distorts. It wears tiny spectacles and has a quantum uncertainty cloud around it. Debug symbols orbit its head like a halo. The harder you try to observe it, the more it changes behavior.",
+    "errorPatterns": ["intermittent", "flaky", "sometimes"],
+    "fixTip": "This bug changes behavior when observed. Add logging, check for timing-dependent code, and look for uninitialized variables."
   },
   {
     "id": 9,
@@ -114,7 +130,9 @@
     "moves": ["coredump", "hotreload"],
     "color": "#e74c3c",
     "sprite": "infiniteloop",
-    "description": "A massive red ouroboros-like creature endlessly chasing its own tail in a perfect circle. Its body is covered in repeating arrow symbols all pointing forward. Its eyes are dizzy spirals. Loading spinners orbit around it. It has been running since the program started and shows no signs of stopping. Despite its size, it moves incredibly slowly because it is stuck repeating the same path forever."
+    "description": "A massive red ouroboros-like creature endlessly chasing its own tail in a perfect circle. Its body is covered in repeating arrow symbols all pointing forward. Its eyes are dizzy spirals. Loading spinners orbit around it. It has been running since the program started and shows no signs of stopping. Despite its size, it moves incredibly slowly because it is stuck repeating the same path forever.",
+    "errorPatterns": ["Maximum call stack size exceeded", "too much recursion", "infinite", "timed out", "ETIMEDOUT"],
+    "fixTip": "Check for missing base cases in recursion, or while-loop conditions that never become false."
   },
   {
     "id": 10,
@@ -127,7 +145,9 @@
     "moves": ["refactor", "compile"],
     "color": "#7d3c98",
     "sprite": "spaghetticode",
-    "description": "A tangled purple mass of intertwined code lines that form a creature vaguely resembling a ball of spaghetti with eyes. Goto arrows stick out in random directions. Its body is a hopeless knot of dependencies and circular references. Despite being an absolute mess, it somehow still works. It leaves a trail of deprecated functions wherever it slithers."
+    "description": "A tangled purple mass of intertwined code lines that form a creature vaguely resembling a ball of spaghetti with eyes. Goto arrows stick out in random directions. Its body is a hopeless knot of dependencies and circular references. Despite being an absolute mess, it somehow still works. It leaves a trail of deprecated functions wherever it slithers.",
+    "errorPatterns": ["circular dependency", "circular require", "ERR_REQUIRE_CYCLE"],
+    "fixTip": "Break circular dependencies by extracting shared code into a separate module."
   },
   {
     "id": 11,
@@ -140,7 +160,9 @@
     "moves": ["bufferoverrun", "bluescreen"],
     "color": "#cb4335",
     "sprite": "stackoverflow",
-    "description": "A towering red creature made of stacked rectangular frames, each one representing a function call. It grows taller and taller as frames pile on top, wobbling precariously. Its eyes peek out from near the top of the stack, looking panicked. The bottom frames are crushed under the weight. When it attacks, the whole stack comes crashing down in a spectacular collapse."
+    "description": "A towering red creature made of stacked rectangular frames, each one representing a function call. It grows taller and taller as frames pile on top, wobbling precariously. Its eyes peek out from near the top of the stack, looking panicked. The bottom frames are crushed under the weight. When it attacks, the whole stack comes crashing down in a spectacular collapse.",
+    "errorPatterns": ["RangeError: Maximum call stack", "stack overflow", "too much recursion"],
+    "fixTip": "Your recursion has no exit. Add a base case or convert to an iterative approach."
   },
   {
     "id": 12,
@@ -153,7 +175,9 @@
     "moves": ["bufferoverrun", "segfault"],
     "color": "#27ae60",
     "sprite": "indexoutofbounds",
-    "description": "A green creature shaped like a hand with an extended index finger, always pointing just past the edge of an array. It stands on a numbered grid but is always one square beyond the last valid position. Red error exclamation marks pop up wherever it points. It has a confused expression, never understanding why it keeps reaching into forbidden territory."
+    "description": "A green creature shaped like a hand with an extended index finger, always pointing just past the edge of an array. It stands on a numbered grid but is always one square beyond the last valid position. Red error exclamation marks pop up wherever it points. It has a confused expression, never understanding why it keeps reaching into forbidden territory.",
+    "errorPatterns": ["ReferenceError:", "is not defined", "index out of", "out of range"],
+    "fixTip": "The variable or property doesn't exist in this scope. Check for typos, missing imports, or undeclared variables."
   },
   {
     "id": 13,
@@ -166,7 +190,9 @@
     "moves": ["cacheinvalidation", "hotfix"],
     "color": "#3498db",
     "sprite": "cssfloat",
-    "description": "A blue translucent creature that drifts sideways unpredictably, refusing to stay where you put it. Its body is a rectangular box model with dotted border lines visible through its skin. It phases through other elements and overlaps with everything nearby. Small 'float: left' and 'clear: both' labels swirl around it like debris. It looks smug, knowing it has broken your layout."
+    "description": "A blue translucent creature that drifts sideways unpredictably, refusing to stay where you put it. Its body is a rectangular box model with dotted border lines visible through its skin. It phases through other elements and overlaps with everything nearby. Small 'float: left' and 'clear: both' labels swirl around it like debris. It looks smug, knowing it has broken your layout.",
+    "errorPatterns": ["CSS", "style", "layout", "rendering"],
+    "fixTip": "Check your CSS for conflicting float/flex/grid rules. Use browser DevTools to inspect computed styles."
   },
   {
     "id": 14,
@@ -179,7 +205,9 @@
     "moves": ["dommanipulation", "nullcheck"],
     "color": "#2980b9",
     "sprite": "404notfound",
-    "description": "A ghostly blue creature that flickers in and out of existence. Its body is shaped like a broken link icon with a sad face. It leaves behind trails of dead URLs and shattered hyperlinks. When you try to look at it directly, it vanishes and a '404' error floats where it was. It moves at incredible speed because it is always somewhere you are not looking."
+    "description": "A ghostly blue creature that flickers in and out of existence. Its body is shaped like a broken link icon with a sad face. It leaves behind trails of dead URLs and shattered hyperlinks. When you try to look at it directly, it vanishes and a '404' error floats where it was. It moves at incredible speed because it is always somewhere you are not looking.",
+    "errorPatterns": ["404", "Not Found", "ENOENT", "no such file", "does not exist"],
+    "fixTip": "The file or URL doesn't exist. Check the path for typos, verify the file was created, or check if it was moved."
   },
   {
     "id": 15,
@@ -192,7 +220,9 @@
     "moves": ["sqlinjection", "apitimeout"],
     "color": "#1abc9c",
     "sprite": "deprecatedapi",
-    "description": "An ancient teal golem covered in cobwebs and strikethrough text. Its body is made of crumbling REST endpoints and yellowed documentation pages. Despite its age, it still functions and hits surprisingly hard. A faded 'DEPRECATED' stamp is branded across its chest. Legacy systems depend on it, so it can never truly die. Sunset notices orbit it like moths."
+    "description": "An ancient teal golem covered in cobwebs and strikethrough text. Its body is made of crumbling REST endpoints and yellowed documentation pages. Despite its age, it still functions and hits surprisingly hard. A faded 'DEPRECATED' stamp is branded across its chest. Legacy systems depend on it, so it can never truly die. Sunset notices orbit it like moths.",
+    "errorPatterns": ["DEPRECAT", "deprecated", "ERR_MODULE_NOT_FOUND", "Cannot find module", "MODULE_NOT_FOUND"],
+    "fixTip": "This API or module is outdated or missing. Check the docs for the replacement, or install the missing dependency."
   },
   {
     "id": 16,
@@ -205,7 +235,9 @@
     "moves": ["apitimeout", "memorydump"],
     "color": "#16a085",
     "sprite": "brokenpipe",
-    "description": "A teal serpentine creature made of cracked and leaking pipes. Data streams pour from the fractures in its body, spraying JSON fragments and binary data everywhere. Its eyes are two pipe connectors that have come loose. It writhes in pain as connections drop and sockets close unexpectedly. Steam hisses from its joints with SIGPIPE error codes."
+    "description": "A teal serpentine creature made of cracked and leaking pipes. Data streams pour from the fractures in its body, spraying JSON fragments and binary data everywhere. Its eyes are two pipe connectors that have come loose. It writhes in pain as connections drop and sockets close unexpectedly. Steam hisses from its joints with SIGPIPE error codes.",
+    "errorPatterns": ["ECONNREFUSED", "ECONNRESET", "EPIPE", "SIGPIPE", "broken pipe", "connection refused", "socket hang up"],
+    "fixTip": "The connection was lost. Check if the server is running, the port is correct, and no firewall is blocking."
   },
   {
     "id": 17,
@@ -218,7 +250,9 @@
     "moves": ["dockerkill", "pipelinefailure"],
     "color": "#e67e22",
     "sprite": "gitblame",
-    "description": "A burnt-orange creature shaped like a pointing hand emerging from a git log. Its body is covered in commit hashes and author annotations. It constantly points at other creatures, deflecting responsibility. A timeline of blame annotations trails behind it like a cape. Its expression is accusatory and self-righteous, always finding someone else's commit to blame."
+    "description": "A burnt-orange creature shaped like a pointing hand emerging from a git log. Its body is covered in commit hashes and author annotations. It constantly points at other creatures, deflecting responsibility. A timeline of blame annotations trails behind it like a cape. Its expression is accusatory and self-righteous, always finding someone else's commit to blame.",
+    "errorPatterns": ["EACCES", "permission denied", "EPERM", "forbidden", "403"],
+    "fixTip": "You don't have permission. Check file permissions, credentials, or API keys."
   },
   {
     "id": 18,
@@ -231,7 +265,9 @@
     "moves": ["pipelinefailure", "forcequit"],
     "color": "#d35400",
     "sprite": "forkbomb",
-    "description": "A small dark-orange creature that splits into copies of itself endlessly. Each copy immediately begins splitting again. Its body is shaped like a forking tree that branches exponentially. Despite each individual being tiny and fragile, the sheer multiplication is overwhelming. :(){ :|:& };: is tattooed on its forehead. It grins maniacally as system resources plummet."
+    "description": "A small dark-orange creature that splits into copies of itself endlessly. Each copy immediately begins splitting again. Its body is shaped like a forking tree that branches exponentially. Despite each individual being tiny and fragile, the sheer multiplication is overwhelming. :(){ :|:& };: is tattooed on its forehead. It grins maniacally as system resources plummet.",
+    "errorPatterns": ["EMFILE", "too many open files", "ENOMEM", "fork", "spawn"],
+    "fixTip": "Too many processes or file handles. Close unused resources and check for runaway child process spawning."
   },
   {
     "id": 19,
@@ -244,7 +280,9 @@
     "moves": ["assertionerror", "mockoverride"],
     "color": "#f1c40f",
     "sprite": "unhandledpromise",
-    "description": "A yellow wispy creature that looks like an unfulfilled contract floating in limbo. Its body is a glowing promise object with a perpetual 'pending' status. It drifts silently through the codebase, ignored by everyone until it suddenly rejects at the worst possible moment. Warning triangles flash around it periodically. It looks sad and neglected, just wanting to be awaited."
+    "description": "A yellow wispy creature that looks like an unfulfilled contract floating in limbo. Its body is a glowing promise object with a perpetual 'pending' status. It drifts silently through the codebase, ignored by everyone until it suddenly rejects at the worst possible moment. Warning triangles flash around it periodically. It looks sad and neglected, just wanting to be awaited.",
+    "errorPatterns": ["UnhandledPromiseRejection", "unhandled promise rejection", "PromiseRejection", "ERR_UNHANDLED_REJECTION"],
+    "fixTip": "Add .catch() to your promise chain, or wrap the await in a try/catch block."
   },
   {
     "id": 20,
@@ -257,6 +295,8 @@
     "moves": ["assertionerror", "threadlock"],
     "color": "#d4ac0d",
     "sprite": "regexdenial",
-    "description": "A dense golden creature made entirely of nested regex patterns that fold in on themselves. Its body pulses as it evaluates increasingly complex backtracking patterns. Capture groups wrap around it like tentacles. It moves slowly because it is stuck in catastrophic backtracking, but when it finally resolves, the impact is devastating. Match groups and quantifiers orbit it like satellites."
+    "description": "A dense golden creature made entirely of nested regex patterns that fold in on themselves. Its body pulses as it evaluates increasingly complex backtracking patterns. Capture groups wrap around it like tentacles. It moves slowly because it is stuck in catastrophic backtracking, but when it finally resolves, the impact is devastating. Match groups and quantifiers orbit it like satellites.",
+    "errorPatterns": ["Invalid regular expression", "regex", "regexp", "backtrack"],
+    "fixTip": "Simplify the regex pattern. Avoid nested quantifiers like (a+)+ which cause catastrophic backtracking."
   }
 ]
