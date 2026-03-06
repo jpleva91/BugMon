@@ -4,20 +4,20 @@
       "id": "callback_chain",
       "name": "Async Evolution",
       "stages": [
-        { "monsterId": 7, "name": "CallbackHell" },
-        { "monsterId": 13, "name": "PromiseChain" },
-        { "monsterId": 14, "name": "AsyncAwait" }
+        { "monsterId": 2, "name": "CallbackHell" },
+        { "monsterId": 23, "name": "PromiseChain" },
+        { "monsterId": 24, "name": "AsyncAwait" }
       ],
       "triggers": [
         {
-          "from": 7,
-          "to": 13,
+          "from": 2,
+          "to": 23,
           "condition": { "event": "commits", "count": 10 },
           "description": "Make 10 commits"
         },
         {
-          "from": 13,
-          "to": 14,
+          "from": 23,
+          "to": 24,
           "condition": { "event": "prs_merged", "count": 3 },
           "description": "Merge 3 pull requests"
         }
@@ -28,42 +28,42 @@
       "name": "Type Safety Evolution",
       "stages": [
         { "monsterId": 1, "name": "NullPointer" },
-        { "monsterId": 15, "name": "OptionalChaining" },
-        { "monsterId": 16, "name": "TypeSafety" }
+        { "monsterId": 21, "name": "OptionalChaining" },
+        { "monsterId": 22, "name": "TypeSafety" }
       ],
       "triggers": [
         {
           "from": 1,
-          "to": 15,
+          "to": 21,
           "condition": { "event": "bugs_fixed", "count": 5 },
           "description": "Fix 5 bugs"
         },
         {
-          "from": 15,
-          "to": 16,
+          "from": 21,
+          "to": 22,
           "condition": { "event": "tests_passing", "count": 10 },
           "description": "Pass 10 test runs"
         }
       ]
     },
     {
-      "id": "spaghetti_chain",
-      "name": "Clean Code Evolution",
+      "id": "divsoup_chain",
+      "name": "Layout Evolution",
       "stages": [
-        { "monsterId": 10, "name": "SpaghettiCode" },
-        { "monsterId": 17, "name": "CleanModule" },
-        { "monsterId": 18, "name": "DesignPattern" }
+        { "monsterId": 5, "name": "DivSoup" },
+        { "monsterId": 25, "name": "Flexbox" },
+        { "monsterId": 26, "name": "CSSGrid" }
       ],
       "triggers": [
         {
-          "from": 10,
-          "to": 17,
+          "from": 5,
+          "to": 25,
           "condition": { "event": "refactors", "count": 5 },
           "description": "Perform 5 refactors"
         },
         {
-          "from": 17,
-          "to": 18,
+          "from": 25,
+          "to": 26,
           "condition": { "event": "code_reviews", "count": 5 },
           "description": "Complete 5 code reviews"
         }
@@ -73,31 +73,31 @@
       "id": "merge_chain",
       "name": "Git Mastery Evolution",
       "stages": [
-        { "monsterId": 6, "name": "MergeConflict" },
-        { "monsterId": 19, "name": "RebaseMaster" }
+        { "monsterId": 8, "name": "MergeConflict" },
+        { "monsterId": 27, "name": "RebaseMaster" }
       ],
       "triggers": [
         {
-          "from": 6,
-          "to": 19,
+          "from": 8,
+          "to": 27,
           "condition": { "event": "conflicts_resolved", "count": 5 },
           "description": "Resolve 5 merge conflicts"
         }
       ]
     },
     {
-      "id": "loop_chain",
-      "name": "Algorithm Evolution",
+      "id": "monolith_chain",
+      "name": "Architecture Evolution",
       "stages": [
-        { "monsterId": 9, "name": "InfiniteLoop" },
-        { "monsterId": 20, "name": "RecursiveElegance" }
+        { "monsterId": 13, "name": "Monolith" },
+        { "monsterId": 28, "name": "Microservice" }
       ],
       "triggers": [
         {
-          "from": 9,
-          "to": 20,
-          "condition": { "event": "ci_passes", "count": 8 },
-          "description": "Pass 8 CI builds"
+          "from": 13,
+          "to": 28,
+          "condition": { "event": "deploys", "count": 5 },
+          "description": "Deploy 5 times"
         }
       ]
     },
@@ -105,29 +105,29 @@
       "id": "leak_chain",
       "name": "Memory Mastery Evolution",
       "stages": [
-        { "monsterId": 3, "name": "MemoryLeak" },
-        { "monsterId": 21, "name": "GarbageCollector" }
+        { "monsterId": 4, "name": "MemoryLeak" },
+        { "monsterId": 29, "name": "GarbageCollector" }
       ],
       "triggers": [
         {
-          "from": 3,
-          "to": 21,
-          "condition": { "event": "deploys", "count": 5 },
-          "description": "Deploy 5 times"
+          "from": 4,
+          "to": 29,
+          "condition": { "event": "ci_passes", "count": 8 },
+          "description": "Pass 8 CI builds"
         }
       ]
     },
     {
-      "id": "stackoverflow_chain",
-      "name": "Knowledge Evolution",
+      "id": "prompt_chain",
+      "name": "AI Mastery Evolution",
       "stages": [
-        { "monsterId": 11, "name": "StackOverflow" },
-        { "monsterId": 22, "name": "DocsMaster" }
+        { "monsterId": 17, "name": "PromptGoblin" },
+        { "monsterId": 30, "name": "PromptEngineer" }
       ],
       "triggers": [
         {
-          "from": 11,
-          "to": 22,
+          "from": 17,
+          "to": 30,
           "condition": { "event": "docs_written", "count": 5 },
           "description": "Write 5 docs"
         }
