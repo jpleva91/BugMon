@@ -2,12 +2,16 @@
 import { initRenderer, drawMap, drawPlayer, drawBattle, clear } from './engine/renderer.js';
 import { clearJustPressed } from './engine/input.js';
 import { getState, setState, STATES } from './engine/state.js';
-import { loadMap, getMap, getTile } from './world/map.js';
+import { getMap } from './world/map.js';
 import { getPlayer, updatePlayer } from './world/player.js';
 import { setMonstersData, checkEncounter } from './world/encounters.js';
 import { setMovesData, setTypeData, startBattle, getBattle, updateBattle, movesData } from './battle/battleEngine.js';
 import { preloadAll } from './sprites/sprites.js';
 import { initTileTextures } from './sprites/tiles.js';
+import { MONSTERS } from './data/monsters.js';
+import { MOVES } from './data/moves.js';
+import { TYPES } from './data/types.js';
+import { EVOLUTIONS } from './data/evolutions.js';
 import { startTransition, updateTransition, getTransition, drawTransitionOverlay } from './engine/transition.js';
 import { initTracker, logEvent, getEvents } from './evolution/tracker.js';
 import { setEvolutionData, setMonstersDataForEvolution, checkPartyEvolutions, applyEvolution, setPendingEvolution, getPendingEvolution, clearPendingEvolution, getEvolutionProgress } from './evolution/evolution.js';
@@ -15,32 +19,17 @@ import { startEvolutionAnimation, updateEvolutionAnimation, drawEvolutionAnimati
 import { playDevEvent } from './audio/sound.js';
 
 let lastTime = 0;
-let typeColors = null;
-let allMonsters = null;
 
 async function init() {
   const canvas = document.getElementById('game');
   initRenderer(canvas);
 
-  // Load data
-  const [monstersRes, movesRes, typesRes, evolutionsRes] = await Promise.all([
-    fetch('data/monsters.json'),
-    fetch('data/moves.json'),
-    fetch('data/types.json'),
-    fetch('data/evolutions.json')
-  ]);
-  const monsters = await monstersRes.json();
-  const moves = await movesRes.json();
-  const types = await typesRes.json();
-  const evolutions = await evolutionsRes.json();
-
-  allMonsters = monsters;
-  setMonstersData(monsters);
-  setMovesData(moves);
-  setTypeData(types);
-  setEvolutionData(evolutions);
-  setMonstersDataForEvolution(monsters);
-  typeColors = types.typeColors;
+  // Wire up data modules (inlined from JSON — no fetch overhead)
+  setMonstersData(MONSTERS);
+  setMovesData(MOVES);
+  setTypeData(TYPES);
+  setEvolutionData(EVOLUTIONS);
+  setMonstersDataForEvolution(MONSTERS);
 
   // Initialize dev activity tracker
   initTracker();
@@ -50,14 +39,13 @@ async function init() {
   await importFromFile();
 
   // Preload sprite images (gracefully falls back if PNGs don't exist yet)
-  await preloadAll(monsters);
+  await preloadAll(MONSTERS);
 
-  await loadMap();
   initTileTextures();
 
   // Give player a starter BugMon
   const player = getPlayer();
-  const starter = { ...monsters[0], currentHP: monsters[0].hp };
+  const starter = { ...MONSTERS[0], currentHP: MONSTERS[0].hp };
   player.party.push(starter);
 
   // Expose dev event logging to the console and to the page
@@ -171,7 +159,7 @@ function render() {
   } else if (state === STATES.BATTLE) {
     const battle = getBattle();
     if (battle) {
-      drawBattle(battle, movesData, typeColors);
+      drawBattle(battle, movesData, TYPES.typeColors);
     }
   } else if (state === STATES.EVOLVING) {
     drawEvolutionAnimation(ctx, 480, 320);

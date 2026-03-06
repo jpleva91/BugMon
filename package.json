@@ -8,6 +8,9 @@
     "simulate": "node simulate.js",
     "simulate:quick": "node simulation/cli.js --battles 1000",
     "simulate:full": "node simulation/cli.js --battles 50000",
+    "sync-data": "node scripts/sync-data.js",
+    "build": "node scripts/build.js",
+    "build:tiny": "node scripts/build.js --no-sprites",
     "serve": "python3 -m http.server"
   },
   "keywords": ["game", "rpg", "pokemon", "simulation"],
