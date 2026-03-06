@@ -46,7 +46,7 @@
     "attack": 7,
     "defense": 8,
     "speed": 2,
-    "moves": ["mutex", "forcequit"],
+    "moves": ["mutex", "forcequit", "reboot"],
     "color": "#8e44ad",
     "sprite": "deadlock",
     "description": "Two interlocked purple chain-link creatures fused together in a death grip, each one grabbing the resource the other needs. They form a circular shape, like two snakes biting each other's tails. Their faces are strained and furious, teeth gritted, eyes bulging. Purple and violet energy crackles where their bodies interlock. Chains and padlock symbols orbit around them. Neither will ever let go."
@@ -111,7 +111,7 @@
     "attack": 4,
     "defense": 5,
     "speed": 1,
-    "moves": ["coredump", "hotreload"],
+    "moves": ["coredump", "hotreload", "reboot"],
     "color": "#e74c3c",
     "sprite": "infiniteloop",
     "description": "A massive red ouroboros-like creature endlessly chasing its own tail in a perfect circle. Its body is covered in repeating arrow symbols all pointing forward. Its eyes are dizzy spirals. Loading spinners orbit around it. It has been running since the program started and shows no signs of stopping. Despite its size, it moves incredibly slowly because it is stuck repeating the same path forever."

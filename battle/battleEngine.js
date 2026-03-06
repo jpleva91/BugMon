@@ -135,6 +135,11 @@ function doAttack(attacker, move, defender, callback) {
   let msg = `${attacker.name} used ${move.name}! ${damage} damage!`;
   if (effectiveness > 1.0) msg += ' Super effective!';
   else if (effectiveness < 1.0) msg += ' Not very effective...';
+  if (move.heal) {
+    const healed = Math.min(move.heal, attacker.hp - attacker.currentHP);
+    attacker.currentHP += healed;
+    if (healed > 0) msg += ` Restored ${healed} HP!`;
+  }
   showMessage(msg, callback);
 }
 
