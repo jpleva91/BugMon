@@ -18,6 +18,7 @@
     "sync-data": "node scripts/sync-data.js",
     "build": "node scripts/build.js",
     "build:tiny": "node scripts/build.js --no-sprites",
+    "budget": "node scripts/build.js --no-sprites",
     "serve": "python3 -m http.server",
     "dev": "node cli/bin.js"
   },

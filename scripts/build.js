@@ -240,4 +240,76 @@ if (noSprites) {
   console.log('\nBuilt without sprites (--no-sprites). Using procedural fallbacks.');
 }
 
-console.log('\nDone! Open dist/bugmon.html in any browser.');
+// --- Byte budget enforcement ---
+const noBudget = process.argv.includes('--no-budget');
+
+if (!noBudget) {
+  const budgetPath = path.join(ROOT, 'size-budget.json');
+  if (fs.existsSync(budgetPath)) {
+    const budget = JSON.parse(fs.readFileSync(budgetPath, 'utf8'));
+    const green = s => `\x1b[32m${s}\x1b[0m`;
+    const yellow = s => `\x1b[33m${s}\x1b[0m`;
+    const red = s => `\x1b[31m${s}\x1b[0m`;
+    const kb = b => (b / 1024).toFixed(1);
+    let failed = false;
+
+    console.log('\n=== Byte Budget ===\n');
+
+    // Bundle check (gzipped, only meaningful for --no-sprites builds)
+    if (noSprites && budget.bundle) {
+      const { target, cap } = budget.bundle;
+      const pctCap = ((1 - gzSize / cap) * 100).toFixed(0);
+
+      if (gzSize <= target) {
+        console.log(`Bundle:  ${green(`${kb(gzSize)} KB`)} / ${kb(target)} KB target ${green('✓')}`);
+      } else {
+        console.log(`Bundle:  ${yellow(`${kb(gzSize)} KB`)} / ${kb(target)} KB target ${yellow('⚠')}  over by ${kb(gzSize - target)} KB`);
+      }
+
+      if (gzSize <= cap) {
+        console.log(`         ${green(`${kb(gzSize)} KB`)} / ${kb(cap)} KB cap    ${green('✓')}  ${pctCap}% headroom`);
+      } else {
+        console.log(`         ${red(`${kb(gzSize)} KB`)} / ${kb(cap)} KB cap    ${red('✗  OVER CAP by ' + kb(gzSize - cap) + ' KB')}`);
+        failed = true;
+      }
+    }
+
+    // Subsystem checks
+    if (budget.subsystems) {
+      console.log('\nSubsystems (source bytes):');
+      const pad = (s, n) => s.padEnd(n);
+
+      for (const [name, sub] of Object.entries(budget.subsystems)) {
+        let total = 0;
+        for (const pattern of sub.files) {
+          if (pattern.includes('*')) {
+            const dir = path.join(ROOT, path.dirname(pattern));
+            const ext = pattern.split('*.')[1];
+            if (fs.existsSync(dir)) {
+              for (const f of fs.readdirSync(dir)) {
+                if (f.endsWith('.' + ext)) {
+                  total += fs.statSync(path.join(dir, f)).size;
+                }
+              }
+            }
+          } else {
+            const fp = path.join(ROOT, pattern);
+            if (fs.existsSync(fp)) total += fs.statSync(fp).size;
+          }
+        }
+
+        const tStatus = total <= sub.target ? green('✓') : yellow('⚠');
+        const cStatus = total <= sub.cap ? green('✓') : red('✗');
+        console.log(`  ${pad(name + ':', 18)} ${pad(kb(total) + ' KB', 9)} / ${pad(kb(sub.target) + ' KB target', 16)} ${tStatus}  / ${pad(kb(sub.cap) + ' KB cap', 14)} ${cStatus}`);
+      }
+    }
+
+    if (failed) {
+      console.log(red('\n✗ BUILD FAILED: Bundle exceeds hard cap. Reduce size before merging.'));
+      process.exit(1);
+    }
+    console.log('');
+  }
+}
+
+console.log('Done! Open dist/bugmon.html in any browser.');
