@@ -1,0 +1,30 @@
+{
+  "name": "bugmon",
+  "version": "1.0.0",
+  "description": "Pokemon-style encounters for runtime errors",
+  "main": "cli/bugmon.js",
+  "bin": {
+    "bugmon": "cli/bugmon.js"
+  },
+  "keywords": [
+    "debug",
+    "debugger",
+    "errors",
+    "pokemon",
+    "bugs",
+    "cli",
+    "developer-tools",
+    "fun"
+  ],
+  "files": [
+    "cli/",
+    "data/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpleva91/BugMon.git"
+  },
+  "author": "jpleva91",
+  "license": "MIT",
+  "homepage": "https://jpleva91.github.io/BugMon/"
+}
