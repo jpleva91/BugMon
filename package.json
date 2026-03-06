@@ -1,13 +1,18 @@
 {
   "name": "bugmon",
-  "version": "0.1.0",
-  "description": "Developer-themed monster battle game with a deterministic engine and simulation tooling",
+  "version": "2.0.0",
+  "description": "A Pokémon-style browser RPG themed around software bugs",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "battle": "tsx src/cli/battle.ts",
-    "simulate": "tsx src/cli/simulate.ts"
+    "simulate": "node simulate.js",
+    "simulate:quick": "node simulation/cli.js --battles 1000",
+    "simulate:full": "node simulation/cli.js --battles 50000",
+    "simulate:ts": "tsx src/cli/simulate.ts",
+    "serve": "python3 -m http.server"
   },
+  "keywords": ["game", "rpg", "pokemon", "simulation"],
   "devDependencies": {
     "typescript": "^5.4.0",
     "tsx": "^4.7.0",
