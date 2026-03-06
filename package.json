@@ -22,6 +22,18 @@
     "serve": "python3 -m http.server",
     "dev": "node cli/bin.js"
   },
-  "keywords": ["game", "rpg", "pokemon", "simulation", "debugging", "developer-tools", "cli"],
-  "license": "MIT"
+  "keywords": [
+    "game",
+    "rpg",
+    "pokemon",
+    "simulation",
+    "debugging",
+    "developer-tools",
+    "cli"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.27.3",
+    "terser": "^5.46.0"
+  }
 }

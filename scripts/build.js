@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // BugMon single-file builder — produces dist/bugmon.html
-// Zero dependencies — uses only Node.js built-ins
+// Dev dependencies: esbuild + terser (zero RUNTIME dependencies)
 // Usage: node scripts/build.js [--no-sprites]
 
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
+import { transformSync } from 'esbuild';
+import { minify as terserMinify } from 'terser';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -77,22 +79,30 @@ function stripImportsExports(code) {
   return code;
 }
 
-function minifyJS(code) {
-  // Strip single-line comments (preserve URLs and strings)
-  code = code.replace(/(?<![:'"])\/\/(?!['"]).*$/gm, '');
-  // Strip multi-line comments
-  code = code.replace(/\/\*[\s\S]*?\*\//g, '');
-  // Collapse blank lines
-  code = code.replace(/\n\s*\n/g, '\n');
-  // Trim each line
-  code = code.split('\n').map(l => l.trim()).filter(l => l).join('\n');
-  // Semicolons before }
-  code = code.replace(/;\n}/g, '}');
-  // Collapse simple blocks to one line
-  code = code.replace(/\{\n([^\n{]*)\n}/g, '{$1}');
-  // Note: Can't remove spaces around operators safely without a proper parser
-  // (would break inside string literals). Keep it simple.
-  return code;
+async function minifyWithEsbuildAndTerser(code) {
+  // Step 1: esbuild — fast minification, dead code elimination, identifier shortening
+  const esbuildResult = transformSync(code, {
+    minify: true,
+    target: 'es2020',
+    loader: 'js',
+  });
+  let minified = esbuildResult.code;
+
+  // Step 2: terser — additional compression + property mangling where safe
+  const terserResult = await terserMinify(minified, {
+    compress: {
+      passes: 2,
+      unsafe_math: true,
+      drop_console: false,
+    },
+    mangle: {
+      toplevel: true,
+    },
+    format: {
+      comments: false,
+    },
+  });
+  return terserResult.code;
 }
 
 function minifyCSS(css) {
@@ -176,13 +186,14 @@ for (const mod of MODULE_ORDER) {
 bundle += '\n// --- Touch controls & mute ---\n';
 bundle += stripImportsExports(inlineScript);
 
-// Minify JS (before adding sprite data which contains base64)
-let minBundle = minifyJS(bundle);
+// Close the IIFE before minification
+bundle += '\n})();\n';
+
+// Minify JS with esbuild + terser (before adding sprite data which contains base64)
+let minBundle = await minifyWithEsbuildAndTerser(bundle);
 
 // Add sprite inlining after minification (base64 data is not minify-safe)
 minBundle += inlineSprites();
-
-minBundle += '\n})();\n';
 
 // --- Assemble final HTML ---
 const output = `<!DOCTYPE html>
