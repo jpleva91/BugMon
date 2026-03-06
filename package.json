@@ -1,0 +1,20 @@
+{
+  "name": "bugmon",
+  "version": "3.0.0",
+  "description": "Debugging intelligence layer — catches real errors, classifies them as BugMon, suggests fixes",
+  "type": "module",
+  "bin": {
+    "bugmon": "./cli/bugmon.mjs"
+  },
+  "scripts": {
+    "validate": "node .github/scripts/validate-data.mjs"
+  },
+  "keywords": [
+    "debugging",
+    "developer-tools",
+    "error-analysis",
+    "gamification",
+    "cli"
+  ],
+  "license": "MIT"
+}
