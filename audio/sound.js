@@ -183,3 +183,21 @@ export function playBattleVictory() {
     playToneDelayed(freq, dur, 'sine', 0.35, i * 140, true);
   });
 }
+
+export function playLevelUp() {
+  const notes = [523, 659, 784, 1047, 1319, 1568]; // C5, E5, G5, C6, E6, G6
+  notes.forEach((freq, i) => {
+    const dur = i === notes.length - 1 ? 0.3 : 0.1;
+    playToneDelayed(freq, dur, 'sine', 0.4, i * 80, true);
+  });
+}
+
+export function playMenuOpen() {
+  playTone(660, 0.06, 'square', 0.25);
+  playToneDelayed(880, 0.08, 'square', 0.25, 60, true);
+}
+
+export function playSaveSuccess() {
+  playTone(1047, 0.08, 'sine', 0.3);
+  playToneDelayed(1319, 0.12, 'sine', 0.3, 100, true);
+}

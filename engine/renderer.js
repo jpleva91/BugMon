@@ -1,6 +1,7 @@
 // Canvas rendering
 import { drawSprite } from '../sprites/sprites.js';
 import { getTileTexture, getGrassFrame, getBattleBackground } from '../sprites/tiles.js';
+import { xpToNextLevel } from '../systems/progression.js';
 
 const TILE = 32;
 const COLORS = {
@@ -68,6 +69,45 @@ export function drawPlayer(player) {
   ctx.fill();
 }
 
+export function drawHUD(player, bugdexInfo) {
+  const mon = player.party[0];
+  const level = mon.level || 1;
+  const xp = mon.xp || 0;
+  const xpNeeded = xpToNextLevel(level);
+
+  // Top bar
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(0, 0, 480, 28);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '11px monospace';
+  ctx.fillText(`Lv.${level} ${mon.name}  HP:${Math.ceil(mon.currentHP)}/${mon.hp}  Party:${player.party.length}`, 5, 12);
+
+  // XP bar
+  const xpBarX = 5;
+  const xpBarY = 17;
+  const xpBarW = 120;
+  ctx.fillStyle = '#333';
+  ctx.fillRect(xpBarX, xpBarY, xpBarW, 6);
+  ctx.fillStyle = '#3498db';
+  ctx.fillRect(xpBarX, xpBarY, xpBarW * (xp / xpNeeded), 6);
+  ctx.fillStyle = '#aaa';
+  ctx.font = '8px monospace';
+  ctx.fillText(`XP:${xp}/${xpNeeded}`, xpBarX + xpBarW + 4, xpBarY + 5);
+
+  // BugDex count (top right)
+  if (bugdexInfo) {
+    ctx.fillStyle = '#f1c40f';
+    ctx.font = '10px monospace';
+    ctx.fillText(`DEX:${bugdexInfo.caught}/${bugdexInfo.total}`, 410, 12);
+  }
+
+  // Menu hint
+  ctx.fillStyle = '#666';
+  ctx.font = '9px monospace';
+  ctx.fillText('[M]enu', 430, 24);
+}
+
 export function drawBattle(battle, movesData, typeColors) {
   // Background
   const bg = getBattleBackground();
@@ -85,9 +125,10 @@ export function drawBattle(battle, movesData, typeColors) {
   }
   ctx.fillStyle = '#fff';
   ctx.font = '14px monospace';
-  ctx.fillText(battle.enemy.name, 300, 30);
+  const enemyLabel = `Lv.${battle.enemy.level || 1} ${battle.enemy.name}`;
+  ctx.fillText(enemyLabel, 280, 30);
   if (typeColors && battle.enemy.type) {
-    drawTypeBadge(battle.enemy.name, 300, 30, battle.enemy.type, typeColors);
+    drawTypeBadge(enemyLabel, 280, 30, battle.enemy.type, typeColors);
   }
   drawHPBar(300, 110, 100, battle.enemy.currentHP, battle.enemy.hp);
 
@@ -98,11 +139,20 @@ export function drawBattle(battle, movesData, typeColors) {
     ctx.fillRect(80, 140, 64, 64);
   }
   ctx.fillStyle = '#fff';
-  ctx.fillText(playerMon.name, 60, 130);
+  const playerLabel = `Lv.${playerMon.level || 1} ${playerMon.name}`;
+  ctx.fillText(playerLabel, 40, 130);
   if (typeColors && playerMon.type) {
-    drawTypeBadge(playerMon.name, 60, 130, playerMon.type, typeColors);
+    drawTypeBadge(playerLabel, 40, 130, playerMon.type, typeColors);
   }
   drawHPBar(60, 210, 100, playerMon.currentHP, playerMon.hp);
+
+  // XP bar under player mon HP
+  const xp = playerMon.xp || 0;
+  const xpNeeded = xpToNextLevel(playerMon.level || 1);
+  ctx.fillStyle = '#222';
+  ctx.fillRect(60, 222, 100, 4);
+  ctx.fillStyle = '#3498db';
+  ctx.fillRect(60, 222, 100 * (xp / xpNeeded), 4);
 
   // Menu area
   ctx.fillStyle = '#16213e';
@@ -140,6 +190,179 @@ export function drawBattle(battle, movesData, typeColors) {
     ctx.font = '14px monospace';
     ctx.fillText(battle.message, 20, 275);
   }
+}
+
+export function drawMenu(menuState, monstersData) {
+  ctx.fillStyle = '#0f0f23';
+  ctx.fillRect(0, 0, 480, 320);
+
+  ctx.strokeStyle = '#e94560';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(4, 4, 472, 312);
+
+  if (menuState.screen === 'main') {
+    drawMainMenu(menuState);
+  } else if (menuState.screen === 'bugdex') {
+    drawBugDex(menuState, monstersData);
+  } else if (menuState.screen === 'party') {
+    drawParty(menuState);
+  } else if (menuState.screen === 'stats') {
+    drawStatsScreen(menuState);
+  }
+}
+
+function drawMainMenu(menuState) {
+  ctx.fillStyle = '#e94560';
+  ctx.font = '20px monospace';
+  ctx.fillText('MENU', 200, 40);
+
+  const options = ['BugDex', 'Party', 'Stats', 'Save', 'Close'];
+  options.forEach((opt, i) => {
+    ctx.fillStyle = i === menuState.index ? '#e94560' : '#fff';
+    ctx.font = '16px monospace';
+    const marker = i === menuState.index ? '> ' : '  ';
+    ctx.fillText(marker + opt, 160, 80 + i * 35);
+  });
+
+  if (menuState.saveMessage) {
+    ctx.fillStyle = '#2ecc71';
+    ctx.font = '12px monospace';
+    ctx.fillText(menuState.saveMessage, 170, 270);
+  }
+}
+
+function drawBugDex(menuState, monstersData) {
+  ctx.fillStyle = '#f1c40f';
+  ctx.font = '18px monospace';
+  ctx.fillText(`BugDex  ${menuState.bugdexInfo.caught}/${menuState.bugdexInfo.total} caught`, 20, 35);
+
+  // Completion bar
+  const pct = menuState.bugdexInfo.total > 0 ? menuState.bugdexInfo.caught / menuState.bugdexInfo.total : 0;
+  ctx.fillStyle = '#333';
+  ctx.fillRect(20, 42, 200, 8);
+  ctx.fillStyle = '#f1c40f';
+  ctx.fillRect(20, 42, 200 * pct, 8);
+
+  const dex = menuState.bugdexData;
+  const startIdx = menuState.dexScroll || 0;
+  const perPage = 10;
+
+  if (!monstersData) return;
+
+  for (let i = 0; i < perPage && startIdx + i < monstersData.length; i++) {
+    const mon = monstersData[startIdx + i];
+    const entry = dex[mon.id];
+    const y = 70 + i * 22;
+    const isSelected = i === (menuState.dexIndex || 0);
+
+    ctx.fillStyle = isSelected ? '#e94560' : '#888';
+    ctx.font = '12px monospace';
+
+    if (entry && entry.caught) {
+      ctx.fillStyle = isSelected ? '#e94560' : '#fff';
+      ctx.fillText(`#${String(mon.id).padStart(2, '0')} ${mon.name}`, 30, y);
+      // Type badge
+      ctx.fillStyle = mon.color;
+      ctx.beginPath();
+      ctx.arc(22, y - 4, 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (entry && entry.seen) {
+      ctx.fillStyle = isSelected ? '#e94560' : '#aaa';
+      ctx.fillText(`#${String(mon.id).padStart(2, '0')} ${mon.name}`, 30, y);
+      ctx.fillStyle = '#555';
+      ctx.font = '10px monospace';
+      ctx.fillText('(seen)', 200, y);
+    } else {
+      ctx.fillText(`#${String(mon.id).padStart(2, '0')} ???`, 30, y);
+    }
+  }
+
+  ctx.fillStyle = '#666';
+  ctx.font = '10px monospace';
+  ctx.fillText('[B] Back  [UP/DOWN] Scroll', 20, 305);
+}
+
+function drawParty(menuState) {
+  ctx.fillStyle = '#3498db';
+  ctx.font = '18px monospace';
+  ctx.fillText('Party', 20, 35);
+
+  const party = menuState.party;
+  party.forEach((mon, i) => {
+    const y = 60 + i * 42;
+    const isSelected = i === (menuState.partyIndex || 0);
+
+    // Background
+    ctx.fillStyle = isSelected ? 'rgba(233, 69, 96, 0.2)' : 'rgba(255,255,255,0.05)';
+    ctx.fillRect(20, y - 12, 440, 36);
+
+    // Color dot
+    ctx.fillStyle = mon.color;
+    ctx.beginPath();
+    ctx.arc(34, y + 5, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Name and level
+    ctx.fillStyle = isSelected ? '#e94560' : '#fff';
+    ctx.font = '13px monospace';
+    ctx.fillText(`Lv.${mon.level || 1} ${mon.name}`, 46, y + 2);
+
+    // Type
+    ctx.fillStyle = '#888';
+    ctx.font = '10px monospace';
+    ctx.fillText(mon.type, 46, y + 16);
+
+    // HP bar
+    const hpPct = Math.max(0, mon.currentHP / mon.hp);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(250, y - 2, 80, 8);
+    ctx.fillStyle = hpPct > 0.5 ? '#2ecc71' : hpPct > 0.2 ? '#f39c12' : '#e74c3c';
+    ctx.fillRect(250, y - 2, 80 * hpPct, 8);
+    ctx.fillStyle = '#aaa';
+    ctx.font = '10px monospace';
+    ctx.fillText(`${Math.ceil(mon.currentHP)}/${mon.hp}`, 335, y + 5);
+
+    // Stats
+    ctx.fillStyle = '#777';
+    ctx.fillText(`ATK:${mon.attack} DEF:${mon.defense} SPD:${mon.speed}`, 250, y + 18);
+  });
+
+  ctx.fillStyle = '#666';
+  ctx.font = '10px monospace';
+  ctx.fillText('[B] Back', 20, 305);
+}
+
+function drawStatsScreen(menuState) {
+  ctx.fillStyle = '#2ecc71';
+  ctx.font = '18px monospace';
+  ctx.fillText('Stats', 20, 35);
+
+  const s = menuState.statsData;
+  const lines = [
+    `Battles Won:     ${s.battlesWon}`,
+    `Battles Lost:    ${s.battlesLost}`,
+    `Captures:        ${s.captures}`,
+    `Total XP Earned: ${s.totalXP}`,
+    `Steps Taken:     ${s.steps}`,
+    `Times Fled:      ${s.runsAway}`,
+    `Highest Level:   ${s.highestLevel}`
+  ];
+
+  lines.forEach((line, i) => {
+    ctx.fillStyle = '#fff';
+    ctx.font = '13px monospace';
+    ctx.fillText(line, 40, 70 + i * 28);
+  });
+
+  // BugDex completion
+  const info = menuState.bugdexInfo;
+  ctx.fillStyle = '#f1c40f';
+  ctx.font = '13px monospace';
+  ctx.fillText(`BugDex: ${info.caught}/${info.total} (${Math.floor((info.caught / info.total) * 100)}%)`, 40, 70 + lines.length * 28 + 10);
+
+  ctx.fillStyle = '#666';
+  ctx.font = '10px monospace';
+  ctx.fillText('[B] Back', 20, 305);
 }
 
 function drawTypeBadge(name, nameX, nameY, type, typeColors) {

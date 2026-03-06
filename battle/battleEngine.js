@@ -3,10 +3,14 @@ import { calcDamage } from './damage.js';
 import { wasPressed } from '../engine/input.js';
 import { setState, STATES } from '../engine/state.js';
 import { getPlayer } from '../world/player.js';
+import { applyXP, defeatXP, captureXP } from '../systems/progression.js';
+import { markSeen, markCaught } from '../systems/bugdex.js';
+import { addBattleWon, addCapture, addXP, addBattleLost, addRunAway, updateHighestLevel } from '../systems/stats.js';
+import { saveGame } from '../systems/save.js';
 import {
   playMenuNav, playMenuConfirm, playMenuCancel,
   playAttack, playFaint, playCaptureSuccess,
-  playCaptureFailure, playBattleVictory
+  playCaptureFailure, playBattleVictory, playLevelUp
 } from '../audio/sound.js';
 
 let battle = null;
@@ -26,6 +30,10 @@ export function setTypeData(data) {
 export function startBattle(wildMon) {
   const player = getPlayer();
   const mon = player.party[0];
+
+  // Track in BugDex
+  markSeen(wildMon.id);
+
   battle = {
     enemy: { ...wildMon },
     playerMon: { ...mon, currentHP: mon.currentHP },
@@ -72,6 +80,7 @@ export function updateBattle(dt) {
         attemptCapture();
       } else {
         // Run
+        addRunAway();
         showMessage('Got away safely!', () => endBattle());
       }
     }
@@ -97,7 +106,7 @@ function executeTurn(playerMove) {
     doAttack(battle.playerMon, playerMove, battle.enemy, () => {
       if (battle.enemy.currentHP <= 0) {
         playFaint();
-        showMessage(`Wild ${battle.enemy.name} fainted!`, () => endBattle());
+        showMessage(`Wild ${battle.enemy.name} fainted!`, () => awardVictoryXP());
       } else {
         enemyTurn();
       }
@@ -106,6 +115,7 @@ function executeTurn(playerMove) {
     enemyTurn(() => {
       if (battle.playerMon.currentHP <= 0) {
         playFaint();
+        addBattleLost();
         showMessage(`${battle.playerMon.name} fainted!`, () => {
           // Heal and return
           const player = getPlayer();
@@ -116,7 +126,7 @@ function executeTurn(playerMove) {
         doAttack(battle.playerMon, playerMove, battle.enemy, () => {
           if (battle.enemy.currentHP <= 0) {
             playFaint();
-            showMessage(`Wild ${battle.enemy.name} fainted!`, () => endBattle());
+            showMessage(`Wild ${battle.enemy.name} fainted!`, () => awardVictoryXP());
           } else {
             battle.state = 'menu';
             battle.menuIndex = 0;
@@ -125,6 +135,46 @@ function executeTurn(playerMove) {
       }
     });
   }
+}
+
+function awardVictoryXP() {
+  addBattleWon();
+  const enemyLevel = battle.enemy.level || 1;
+  const xp = defeatXP(enemyLevel);
+  addXP(xp);
+
+  const player = getPlayer();
+  const levelUps = applyXP(battle.playerMon, xp);
+
+  // Sync XP/level back to party
+  player.party[0].xp = battle.playerMon.xp;
+  player.party[0].level = battle.playerMon.level;
+  player.party[0].hp = battle.playerMon.hp;
+  player.party[0].attack = battle.playerMon.attack;
+  player.party[0].defense = battle.playerMon.defense;
+  player.party[0].speed = battle.playerMon.speed;
+
+  updateHighestLevel(battle.playerMon.level);
+
+  showMessage(`+${xp} XP!`, () => {
+    showLevelUps(levelUps, () => {
+      saveGame();
+      endBattle();
+    });
+  });
+}
+
+function showLevelUps(levelUps, callback) {
+  if (levelUps.length === 0) {
+    callback();
+    return;
+  }
+
+  const lu = levelUps.shift();
+  playLevelUp();
+  showMessage(`${lu.name} reached Lv.${lu.level}! ${lu.gains}`, () => {
+    showLevelUps(levelUps, callback);
+  });
 }
 
 function doAttack(attacker, move, defender, callback) {
@@ -144,6 +194,7 @@ function enemyTurn(callback) {
   doAttack(battle.enemy, move, battle.playerMon, () => {
     if (battle.playerMon.currentHP <= 0) {
       playFaint();
+      addBattleLost();
       showMessage(`${battle.playerMon.name} fainted!`, () => {
         const player = getPlayer();
         player.party[0].currentHP = player.party[0].hp;
@@ -166,8 +217,31 @@ function attemptCapture() {
     const player = getPlayer();
     const captured = { ...battle.enemy, currentHP: battle.enemy.currentHP };
     player.party.push(captured);
+    markCaught(battle.enemy.id);
+    addCapture();
+
+    // Award capture XP
+    const enemyLevel = battle.enemy.level || 1;
+    const xp = captureXP(enemyLevel);
+    addXP(xp);
+    const levelUps = applyXP(battle.playerMon, xp);
+
+    // Sync back
+    player.party[0].xp = battle.playerMon.xp;
+    player.party[0].level = battle.playerMon.level;
+    player.party[0].hp = battle.playerMon.hp;
+    player.party[0].attack = battle.playerMon.attack;
+    player.party[0].defense = battle.playerMon.defense;
+    player.party[0].speed = battle.playerMon.speed;
+
+    updateHighestLevel(battle.playerMon.level);
     playCaptureSuccess();
-    showMessage(`Caught ${battle.enemy.name}!`, () => endBattle());
+    showMessage(`Caught ${battle.enemy.name}! +${xp} XP!`, () => {
+      showLevelUps(levelUps, () => {
+        saveGame();
+        endBattle();
+      });
+    });
   } else {
     playCaptureFailure();
     showMessage(`${battle.enemy.name} broke free!`, () => {
