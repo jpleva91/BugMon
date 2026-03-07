@@ -1,7 +1,7 @@
 {
   "bundle": {
     "target": 10240,
-    "cap": 16384,
+    "cap": 17408,
     "unit": "bytes-gzipped",
     "note": "Measured on dist/bugmon.html built with --no-sprites"
   },

@@ -330,7 +330,7 @@ Defines evolution chains with dev-activity triggers:
 
 The project enforces strict bundle size limits via `size-budget.json` and the `size-check.yml` CI workflow:
 
-- **Main bundle**: 10 KB target / 16 KB cap (gzipped, built with `--no-sprites`)
+- **Main bundle**: 10 KB target / 17 KB cap (gzipped, built with `--no-sprites`)
 - **Subsystem caps** (raw bytes): engine (7.5 KB), rendering (15.5 KB), battle (14.5 KB), data (13.2 KB), game-logic (19.5 KB), infrastructure (7 KB)
 
 Run `npm run budget` to check compliance locally.
